@@ -1,0 +1,85 @@
+<nav class="h-100 d-flex flex-column" aria-label="Main Navigation">
+  <div class="sidebar-section-title">Navigation</div>
+  <ul class="sidebar-nav-list">
+    <li class="sidebar-nav-item" ng-class="{ 'active': $ctrl.isActive('/dashboard') }">
+      <a href="#/dashboard" title="Dashboard">
+        <i class="bi bi-grid-1x2-fill" aria-hidden="true"></i>
+        <span>Dashboard</span>
+      </a>
+    </li>
+
+    <li class="sidebar-nav-item" ng-class="{ 'active': $ctrl.isActive('/applications') }">
+      <a href="#/applications" title="Job Applications">
+        <i class="bi bi-briefcase-fill" aria-hidden="true"></i>
+        <span>Applications</span>
+      </a>
+    </li>
+
+    <li class="sidebar-nav-item" ng-class="{ 'active': $ctrl.isActive('/kanban') }">
+      <a href="#/kanban" title="Kanban Pipeline">
+        <i class="bi bi-kanban-fill" aria-hidden="true"></i>
+        <span>Kanban Board</span>
+      </a>
+    </li>
+
+    <li class="sidebar-nav-item" ng-class="{ 'active': $ctrl.isActive('/interviews') }">
+      <a href="#/interviews" title="Interviews">
+        <i class="bi bi-camera-video-fill" aria-hidden="true"></i>
+        <span>Interviews</span>
+      </a>
+    </li>
+
+    <li class="sidebar-nav-item" ng-class="{ 'active': $ctrl.isActive('/tasks') }">
+      <a href="#/tasks" title="Tasks & Reminders">
+        <i class="bi bi-check2-square" aria-hidden="true"></i>
+        <span>Tasks</span>
+      </a>
+    </li>
+
+    <li class="sidebar-nav-item" ng-class="{ 'active': $ctrl.isActive('/resumes') }">
+      <a href="#/resumes" title="Resume Versions">
+        <i class="bi bi-file-earmark-person-fill" aria-hidden="true"></i>
+        <span>Resumes</span>
+      </a>
+    </li>
+
+    <li class="sidebar-nav-item" ng-class="{ 'active': $ctrl.isActive('/job-descriptions') }">
+      <a href="#/job-descriptions" title="Job Descriptions">
+        <i class="bi bi-file-earmark-text-fill" aria-hidden="true"></i>
+        <span>Job Descriptions</span>
+      </a>
+    </li>
+
+    <li class="sidebar-nav-item" ng-class="{ 'active': $ctrl.isActive('/skills') }">
+      <a href="#/skills" title="Skill Intelligence">
+        <i class="bi bi-cpu-fill" aria-hidden="true"></i>
+        <span>Skills</span>
+      </a>
+    </li>
+
+    <li class="sidebar-nav-item" ng-class="{ 'active': $ctrl.isActive('/analytics') }">
+      <a href="#/analytics" title="Application Analytics">
+        <i class="bi bi-graph-up-arrow" aria-hidden="true"></i>
+        <span>Analytics</span>
+      </a>
+    </li>
+  </ul>
+
+  <div class="sidebar-section-title mt-2">Preferences</div>
+  <ul class="sidebar-nav-list">
+    <li class="sidebar-nav-item" ng-class="{ 'active': $ctrl.isActive('/settings') }">
+      <a href="#/settings" title="Settings">
+        <i class="bi bi-gear-fill" aria-hidden="true"></i>
+        <span>Settings</span>
+      </a>
+    </li>
+  </ul>
+
+  <div class="sidebar-footer-note mt-auto">
+    <div class="d-flex align-items-center gap-2 mb-1">
+      <span class="badge bg-primary-subtle text-primary border border-primary-subtle">Phase 1</span>
+      <span class="text-white-50 small">AngularJS 1.8</span>
+    </div>
+    <div class="text-slate-muted small">Job Command Center v1.0</div>
+  </div>
+</nav>

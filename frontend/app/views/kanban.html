@@ -1,0 +1,93 @@
+<div class="view-container">
+  <!-- Page Header -->
+  <div class="page-header">
+    <div>
+      <h1 class="page-header-title">Kanban Pipeline</h1>
+      <p class="page-header-subtitle">Visualize, drag, and drop applications stage-by-stage across your hiring pipeline.</p>
+    </div>
+    <div class="page-header-actions d-flex align-items-center gap-2">
+      <!-- Withdrawn Applications Count -->
+      <span class="badge bg-light text-secondary border px-3 py-2" ng-if="vm.withdrawnCount > 0" title="Applications in Withdrawn status">
+        <i class="bi bi-archive me-1"></i> Withdrawn: {{ vm.withdrawnCount }}
+      </span>
+
+      <!-- Board Refresh Button -->
+      <button class="btn btn-sm btn-command-secondary" type="button" ng-click="vm.refreshBoard()" title="Reload board from server">
+        <i class="bi bi-arrow-clockwise me-1"></i> Refresh
+      </button>
+
+      <a href="#/applications" class="btn btn-sm btn-command-primary">
+        <i class="bi bi-plus-lg me-1"></i> Add Application
+      </a>
+    </div>
+  </div>
+
+  <!-- In-Flight Status Update Error Banner -->
+  <div class="alert alert-danger alert-dismissible fade show d-flex align-items-center mb-3 shadow-sm" role="alert" ng-if="vm.errorMessage">
+    <i class="bi bi-exclamation-triangle-fill me-2 fs-5"></i>
+    <div class="flex-grow-1">{{ vm.errorMessage }}</div>
+    <button type="button" class="btn-close" aria-label="Close" ng-click="vm.errorMessage = ''"></button>
+  </div>
+
+  <!-- Loading State -->
+  <div class="card p-5 text-center my-3 border-0 shadow-sm" ng-if="vm.isLoading">
+    <div class="spinner-border text-primary mx-auto mb-3" role="status" style="width: 2.5rem; height: 2.5rem;">
+      <span class="visually-hidden">Loading pipeline...</span>
+    </div>
+    <h5 class="text-dark fw-semibold mb-1">Loading pipeline...</h5>
+    <p class="text-muted fs-sm mb-0">Retrieving active opportunities and pipeline stages from MySQL.</p>
+  </div>
+
+  <!-- Kanban Columns Board Container -->
+  <div class="kanban-board-wrapper" ng-if="!vm.isLoading">
+    <div class="kanban-column" ng-repeat="col in vm.columns">
+      <!-- Column Header -->
+      <div class="kanban-column-header">
+        <h3 class="kanban-column-title">
+          <span>{{ col.label }}</span>
+        </h3>
+        <span class="kanban-column-count">
+          {{ vm.applicationsByColumn[col.key].length || 0 }}
+        </span>
+      </div>
+
+      <!-- Column Card Stack (SortableJS Drop Zone) -->
+      <div class="kanban-cards-stack"
+           kanban-sortable
+           kanban-status="{{col.key}}"
+           data-status="{{col.key}}"
+           on-status-change="vm.handleStatusChange(applicationId, oldStatus, newStatus, itemEl, fromEl, oldIndex)">
+
+        <div class="kanban-item-card"
+             ng-repeat="job in vm.applicationsByColumn[col.key] track by job.id"
+             data-application-id="{{job.id}}"
+             ng-class="{ 'is-updating': vm.isUpdating(job.id) }">
+
+          <div class="d-flex justify-content-between align-items-start mb-1">
+            <div class="kanban-card-company">{{ job.company.name || job.company }}</div>
+            <!-- In-Flight Update Spinner -->
+            <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle fs-xs" ng-if="vm.isUpdating(job.id)">
+              <span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true" style="width: 0.65rem; height: 0.65rem;"></span> Updating...
+            </span>
+          </div>
+
+          <div class="kanban-card-role">{{ job.job_title || job.jobTitle }}</div>
+
+          <div class="kanban-card-footer">
+            <span><i class="bi bi-geo-alt text-primary"></i> {{ job.location || 'Not specified' }}</span>
+            <span ng-if="job.applied_date || job.appliedDate">
+              <i class="bi bi-calendar3"></i> {{ job.applied_date || job.appliedDate }}
+            </span>
+          </div>
+        </div>
+
+        <!-- Empty Column Placeholder Drop Zone -->
+        <div class="empty-column-placeholder text-center text-slate-muted py-4 small"
+             ng-if="!vm.applicationsByColumn[col.key].length">
+          <i class="bi bi-inbox d-block fs-5 mb-1 opacity-50"></i>
+          Drop applications here
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

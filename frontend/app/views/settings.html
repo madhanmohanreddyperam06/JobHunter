@@ -1,0 +1,87 @@
+<div class="view-container">
+  <!-- Page Header -->
+  <div class="page-header">
+    <div>
+      <h1 class="page-header-title">Settings</h1>
+      <p class="page-header-subtitle">Manage your account profile, job-search preferences, and workspace configuration.</p>
+    </div>
+  </div>
+
+  <div class="row g-4">
+    <!-- Left Navigation Tabs -->
+    <div class="col-12 col-md-3">
+      <div class="list-group">
+        <button type="button" 
+                class="list-group-item list-group-item-action d-flex align-items-center gap-2"
+                ng-class="{ 'active': vm.activeTab === 'profile' }"
+                ng-click="vm.setTab('profile')">
+          <i class="bi bi-person-circle"></i>
+          <span>Profile</span>
+        </button>
+        <button type="button" 
+                class="list-group-item list-group-item-action d-flex align-items-center gap-2"
+                ng-class="{ 'active': vm.activeTab === 'preferences' }"
+                ng-click="vm.setTab('preferences')">
+          <i class="bi bi-sliders"></i>
+          <span>Preferences</span>
+        </button>
+        <button type="button" 
+                class="list-group-item list-group-item-action d-flex align-items-center gap-2"
+                ng-class="{ 'active': vm.activeTab === 'application' }"
+                ng-click="vm.setTab('application')">
+          <i class="bi bi-gear"></i>
+          <span>Application Settings</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Right Settings Content Panel -->
+    <div class="col-12 col-md-9">
+      <!-- Profile Tab -->
+      <div class="card bg-slate-card p-4" ng-show="vm.activeTab === 'profile'">
+        <h2 class="h5 mb-3 fw-bold text-dark">Profile Settings</h2>
+        <div class="mb-3">
+          <label class="form-label small fw-semibold text-secondary" for="settingsName">Full Name</label>
+          <input type="text" id="settingsName" class="form-control" value="Madhu" readonly>
+        </div>
+        <div class="mb-3">
+          <label class="form-label small fw-semibold text-secondary" for="settingsEmail">Email Address</label>
+          <input type="email" id="settingsEmail" class="form-control" value="user@jobcommandcenter.local" readonly>
+        </div>
+        <div class="mb-3">
+          <label class="form-label small fw-semibold text-secondary" for="settingsTargetRole">Target Role</label>
+          <input type="text" id="settingsTargetRole" class="form-control" value="Full Stack / Frontend Engineer" readonly>
+        </div>
+        <div class="text-slate-muted small mt-2">
+          <i class="bi bi-lock me-1"></i> User profile authentication will be integrated in Phase 3.
+        </div>
+      </div>
+
+      <!-- Preferences Tab -->
+      <div class="card bg-slate-card p-4" ng-show="vm.activeTab === 'preferences'">
+        <h2 class="h5 mb-3 fw-bold text-dark">Job Search Preferences</h2>
+        <div class="mb-3">
+          <label class="form-label small fw-semibold text-secondary" for="settingsLocations">Preferred Locations</label>
+          <input type="text" id="settingsLocations" class="form-control" value="Bangalore, Hyderabad, Remote" readonly>
+        </div>
+        <div class="mb-3">
+          <label class="form-label small fw-semibold text-secondary" for="settingsWorkType">Employment Type</label>
+          <input type="text" id="settingsWorkType" class="form-control" value="Full-time, Contract" readonly>
+        </div>
+      </div>
+
+      <!-- Application Settings Tab -->
+      <div class="card bg-slate-card p-4" ng-show="vm.activeTab === 'application'">
+        <h2 class="h5 mb-3 fw-bold text-dark">Application Settings</h2>
+        <div class="p-3 bg-light rounded-3 border mb-3">
+          <div class="fw-semibold text-dark mb-1">Architecture &amp; Framework</div>
+          <p class="small text-secondary mb-0">Frontend: AngularJS 1.8.x with ngRoute. Planned Backend: FastAPI + MySQL.</p>
+        </div>
+        <div class="p-3 bg-light rounded-3 border">
+          <div class="fw-semibold text-dark mb-1">Current Version</div>
+          <p class="small text-secondary mb-0">Phase 1 Foundation — Build 1.0.0</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

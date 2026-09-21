@@ -1,0 +1,565 @@
+<div class="view-container">
+  <!-- Page Header -->
+  <div class="page-header">
+    <div>
+      <h1 class="page-header-title">Interview Command Center</h1>
+      <p class="page-header-subtitle">Schedule rounds, track upcoming discussions, and monitor candidate evaluations.</p>
+    </div>
+    <div class="page-header-actions">
+      <button class="btn btn-command-primary" type="button" ng-click="vm.openCreateModal()">
+        <i class="bi bi-calendar-plus me-1"></i> Schedule Interview
+      </button>
+    </div>
+  </div>
+
+  <!-- Alert Banner -->
+  <div class="alert alert-dismissible fade show mb-4" 
+       ng-class="'alert-' + vm.alert.type" 
+       role="alert" 
+       ng-if="vm.alert">
+    <div class="d-flex align-items-center">
+      <i class="bi me-2 fs-5" ng-class="{
+        'bi-check-circle-fill': vm.alert.type === 'success',
+        'bi-exclamation-triangle-fill': vm.alert.type === 'danger' || vm.alert.type === 'warning',
+        'bi-info-circle-fill': vm.alert.type === 'info'
+      }"></i>
+      <div>{{ vm.alert.message }}</div>
+    </div>
+    <button type="button" class="btn-close" ng-click="vm.alert = null" aria-label="Close"></button>
+  </div>
+
+  <!-- 4 Summary KPI Cards -->
+  <div class="row g-3 mb-4">
+    <div class="col-6 col-md-3">
+      <div class="card bg-slate-card p-3 border">
+        <div class="d-flex justify-content-between align-items-center mb-1">
+          <span class="text-slate-muted small fw-semibold">Total Tracked</span>
+          <i class="bi bi-camera-video text-primary fs-5"></i>
+        </div>
+        <div class="h3 mb-0 fw-bold text-dark">{{ vm.stats.total }}</div>
+        <div class="text-slate-muted small mt-1">Across all applications</div>
+      </div>
+    </div>
+    <div class="col-6 col-md-3">
+      <div class="card bg-slate-card p-3 border">
+        <div class="d-flex justify-content-between align-items-center mb-1">
+          <span class="text-slate-muted small fw-semibold">Upcoming</span>
+          <i class="bi bi-clock-history text-purple fs-5"></i>
+        </div>
+        <div class="h3 mb-0 fw-bold text-purple">{{ vm.stats.upcoming }}</div>
+        <div class="text-slate-muted small mt-1">Next scheduled rounds</div>
+      </div>
+    </div>
+    <div class="col-6 col-md-3">
+      <div class="card bg-slate-card p-3 border">
+        <div class="d-flex justify-content-between align-items-center mb-1">
+          <span class="text-slate-muted small fw-semibold">Scheduled</span>
+          <i class="bi bi-calendar-check text-info fs-5"></i>
+        </div>
+        <div class="h3 mb-0 fw-bold text-info">{{ vm.stats.scheduled }}</div>
+        <div class="text-slate-muted small mt-1">Awaiting interview date</div>
+      </div>
+    </div>
+    <div class="col-6 col-md-3">
+      <div class="card bg-slate-card p-3 border">
+        <div class="d-flex justify-content-between align-items-center mb-1">
+          <span class="text-slate-muted small fw-semibold">Completed</span>
+          <i class="bi bi-check2-circle text-success fs-5"></i>
+        </div>
+        <div class="h3 mb-0 fw-bold text-success">{{ vm.stats.completed }}</div>
+        <div class="text-slate-muted small mt-1">Past rounds finished</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filters & Search Toolbar -->
+  <div class="card bg-slate-card p-3 mb-4 border">
+    <div class="row g-3 align-items-center">
+      <!-- Search -->
+      <div class="col-12 col-md-5">
+        <div class="input-group">
+          <span class="input-group-text bg-white border-end-0 text-muted">
+            <i class="bi bi-search"></i>
+          </span>
+          <input type="text" 
+                 class="form-control border-start-0 ps-0" 
+                 placeholder="Search round, company, role, interviewer..." 
+                 ng-model="vm.filters.search" 
+                 ng-change="vm.onFilterChange()" 
+                 ng-model-options="{ debounce: 300 }">
+          <button class="btn btn-outline-secondary border-start-0" 
+                  type="button" 
+                  ng-if="vm.filters.search" 
+                  ng-click="vm.filters.search = ''; vm.onFilterChange()">
+            <i class="bi bi-x"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Type Filter -->
+      <div class="col-6 col-md-3">
+        <select class="form-select" 
+                ng-model="vm.filters.interview_type" 
+                ng-change="vm.onFilterChange()">
+          <option value="">All Interview Types</option>
+          <option value="VIDEO">Video Call</option>
+          <option value="TECHNICAL">Technical Coding / Architecture</option>
+          <option value="PHONE">Phone Screen</option>
+          <option value="HR">HR / Recruiter</option>
+          <option value="BEHAVIORAL">Behavioral</option>
+          <option value="ONSITE">Onsite / Office</option>
+          <option value="OTHER">Other</option>
+        </select>
+      </div>
+
+      <!-- Status Filter -->
+      <div class="col-6 col-md-2">
+        <select class="form-select" 
+                ng-model="vm.filters.status" 
+                ng-change="vm.onFilterChange()">
+          <option value="">All Statuses</option>
+          <option value="SCHEDULED">Scheduled</option>
+          <option value="COMPLETED">Completed</option>
+          <option value="RESCHEDULED">Rescheduled</option>
+          <option value="CANCELLED">Cancelled</option>
+          <option value="NO_SHOW">No Show</option>
+        </select>
+      </div>
+
+      <!-- Reset -->
+      <div class="col-12 col-md-2 text-end">
+        <button class="btn btn-outline-secondary w-100" 
+                type="button" 
+                ng-click="vm.clearFilters()">
+          <i class="bi bi-arrow-counterclockwise me-1"></i> Reset
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tabs Navigation -->
+  <ul class="nav nav-tabs mb-4">
+    <li class="nav-item">
+      <button class="nav-link" 
+              ng-class="{ 'active fw-bold': vm.activeTab === 'upcoming' }" 
+              type="button" 
+              ng-click="vm.activeTab = 'upcoming'">
+        <i class="bi bi-calendar-event me-1 text-purple"></i>
+        Upcoming Rounds 
+        <span class="badge bg-purple ms-1">{{ vm.upcomingInterviews.length }}</span>
+      </button>
+    </li>
+    <li class="nav-item">
+      <button class="nav-link" 
+              ng-class="{ 'active fw-bold': vm.activeTab === 'past' }" 
+              type="button" 
+              ng-click="vm.activeTab = 'past'">
+        <i class="bi bi-clock-history me-1 text-secondary"></i>
+        Past & Completed 
+        <span class="badge bg-secondary ms-1">{{ vm.pastInterviews.length }}</span>
+      </button>
+    </li>
+    <li class="nav-item">
+      <button class="nav-link" 
+              ng-class="{ 'active fw-bold': vm.activeTab === 'all' }" 
+              type="button" 
+              ng-click="vm.activeTab = 'all'">
+        <i class="bi bi-list-check me-1 text-primary"></i>
+        All Interviews 
+        <span class="badge bg-primary ms-1">{{ vm.interviews.length }}</span>
+      </button>
+    </li>
+  </ul>
+
+  <!-- Loading State -->
+  <div class="text-center py-5" ng-if="vm.isLoading">
+    <div class="spinner-border text-primary mb-3" role="status">
+      <span class="visually-hidden">Loading interviews...</span>
+    </div>
+    <p class="text-slate-muted">Fetching interview pipeline from MySQL...</p>
+  </div>
+
+  <!-- TAB 1: Upcoming Interviews -->
+  <div ng-if="!vm.isLoading && vm.activeTab === 'upcoming'">
+    <!-- Empty State -->
+    <div class="empty-state-card" ng-if="vm.upcomingInterviews.length === 0">
+      <div class="empty-state-icon-circle">
+        <i class="bi bi-calendar-x"></i>
+      </div>
+      <h2 class="empty-state-title">No Upcoming Interviews</h2>
+      <p class="empty-state-text">You have no upcoming interview rounds scheduled right now.</p>
+      <div class="d-flex gap-2">
+        <button class="btn btn-command-primary" type="button" ng-click="vm.openCreateModal()">
+          <i class="bi bi-calendar-plus me-1"></i> Schedule Interview
+        </button>
+        <a href="#/applications" class="btn btn-command-secondary">
+          <i class="bi bi-briefcase me-1"></i> View Applications
+        </a>
+      </div>
+    </div>
+
+    <!-- Cards List -->
+    <div class="d-flex flex-column gap-3" ng-if="vm.upcomingInterviews.length > 0">
+      <div class="card bg-slate-card border shadow-sm p-4" ng-repeat="item in vm.upcomingInterviews track by item.id">
+        <div class="row align-items-center g-3">
+          <!-- Main Left Details -->
+          <div class="col-12 col-lg-8">
+            <div class="d-flex flex-wrap align-items-center gap-2 mb-2">
+              <span class="fw-bold text-dark fs-5">{{ item.roundName }}</span>
+              <span class="badge" ng-class="vm.getTypeBadgeClass(item.interviewType)">
+                <i class="bi me-1" ng-class="vm.getTypeIcon(item.interviewType)"></i>
+                {{ item.interviewType }}
+              </span>
+              <span class="badge" ng-class="vm.getStatusBadgeClass(item.status)">
+                {{ item.status }}
+              </span>
+              <span class="badge bg-warning-subtle text-dark border border-warning-subtle fw-semibold">
+                <i class="bi bi-alarm me-1"></i>{{ vm.getCountdown(item.scheduledAt) }}
+              </span>
+            </div>
+
+            <div class="d-flex align-items-center gap-2 text-slate-muted mb-2">
+              <i class="bi bi-building text-primary"></i>
+              <strong class="text-dark">{{ item.companyName }}</strong>
+              <span>&bull;</span>
+              <span>{{ item.jobTitle }}</span>
+            </div>
+
+            <div class="d-flex flex-wrap gap-3 small text-slate-muted">
+              <span ng-if="item.scheduledAt">
+                <i class="bi bi-calendar-event me-1 text-secondary"></i>
+                {{ item.scheduledAt | date:'EEE, MMM d, yyyy @ h:mm a' }}
+              </span>
+              <span ng-if="item.durationMinutes">
+                <i class="bi bi-stopwatch me-1 text-secondary"></i>
+                {{ item.durationMinutes }} minutes
+              </span>
+              <span ng-if="item.interviewerName">
+                <i class="bi bi-person me-1 text-secondary"></i>
+                {{ item.interviewerName }}
+                <span class="text-muted" ng-if="item.interviewerEmail">({{ item.interviewerEmail }})</span>
+              </span>
+              <span ng-if="item.location">
+                <i class="bi bi-geo-alt me-1 text-secondary"></i>
+                {{ item.location }}
+              </span>
+            </div>
+
+            <!-- Notes preview -->
+            <div class="mt-3 p-2 bg-light rounded border small text-secondary" ng-if="item.notes">
+              <i class="bi bi-journal-text me-1 text-primary"></i>
+              <strong>Prep Notes:</strong> {{ item.notes }}
+            </div>
+          </div>
+
+          <!-- Actions Right -->
+          <div class="col-12 col-lg-4 text-lg-end">
+            <div class="d-flex flex-column flex-sm-row justify-content-lg-end align-items-stretch align-items-lg-center gap-2">
+              <!-- Join Meeting Button if URL available -->
+              <a ng-href="{{ item.meetingUrl }}" 
+                 target="_blank" 
+                 rel="noopener noreferrer" 
+                 class="btn btn-sm btn-success" 
+                 ng-if="item.meetingUrl">
+                <i class="bi bi-box-arrow-up-right me-1"></i> Join Meeting
+              </a>
+
+              <!-- Status Dropdown -->
+              <div class="dropdown">
+                <button class="btn btn-sm btn-outline-secondary dropdown-toggle w-100" 
+                        type="button" 
+                        data-bs-toggle="dropdown" 
+                        aria-expanded="false">
+                  Status: {{ item.status }}
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end shadow-sm">
+                  <li><button class="dropdown-item small" ng-click="vm.updateInterviewStatus(item, 'SCHEDULED')">Mark Scheduled</button></li>
+                  <li><button class="dropdown-item small text-success" ng-click="vm.updateInterviewStatus(item, 'COMPLETED')"><i class="bi bi-check2 me-1"></i> Mark Completed</button></li>
+                  <li><button class="dropdown-item small text-warning" ng-click="vm.updateInterviewStatus(item, 'RESCHEDULED')">Mark Rescheduled</button></li>
+                  <li><button class="dropdown-item small text-danger" ng-click="vm.updateInterviewStatus(item, 'CANCELLED')">Mark Cancelled</button></li>
+                  <li><button class="dropdown-item small text-muted" ng-click="vm.updateInterviewStatus(item, 'NO_SHOW')">Mark No Show</button></li>
+                </ul>
+              </div>
+
+              <!-- Edit Button -->
+              <button class="btn btn-sm btn-outline-primary" 
+                      type="button" 
+                      title="Edit interview details"
+                      ng-click="vm.openEditModal(item)">
+                <i class="bi bi-pencil"></i>
+              </button>
+
+              <!-- Delete Button -->
+              <button class="btn btn-sm btn-outline-danger" 
+                      type="button" 
+                      title="Delete interview"
+                      ng-click="vm.confirmDelete(item)">
+                <i class="bi bi-trash"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB 2: Past & Completed Interviews -->
+  <div ng-if="!vm.isLoading && vm.activeTab === 'past'">
+    <!-- Empty State -->
+    <div class="empty-state-card" ng-if="vm.pastInterviews.length === 0">
+      <div class="empty-state-icon-circle">
+        <i class="bi bi-clock-history"></i>
+      </div>
+      <h2 class="empty-state-title">No Past Interviews</h2>
+      <p class="empty-state-text">Completed and past interview rounds will appear here for debriefing.</p>
+    </div>
+
+    <!-- Cards List -->
+    <div class="d-flex flex-column gap-3" ng-if="vm.pastInterviews.length > 0">
+      <div class="card bg-slate-card border shadow-sm p-4 opacity-90" ng-repeat="item in vm.pastInterviews track by item.id">
+        <div class="row align-items-center g-3">
+          <div class="col-12 col-lg-8">
+            <div class="d-flex flex-wrap align-items-center gap-2 mb-2">
+              <span class="fw-bold text-dark fs-5">{{ item.roundName }}</span>
+              <span class="badge" ng-class="vm.getTypeBadgeClass(item.interviewType)">{{ item.interviewType }}</span>
+              <span class="badge" ng-class="vm.getStatusBadgeClass(item.status)">{{ item.status }}</span>
+              <span class="text-slate-muted small">({{ vm.getCountdown(item.scheduledAt) }})</span>
+            </div>
+
+            <div class="text-slate-muted small mb-2">
+              <strong class="text-dark">{{ item.companyName }}</strong> &bull; {{ item.jobTitle }}
+            </div>
+
+            <div class="d-flex flex-wrap gap-3 small text-slate-muted">
+              <span ng-if="item.scheduledAt">
+                <i class="bi bi-calendar-check me-1"></i>
+                {{ item.scheduledAt | date:'EEE, MMM d, yyyy @ h:mm a' }}
+              </span>
+              <span ng-if="item.interviewerName">
+                <i class="bi bi-person me-1"></i>
+                {{ item.interviewerName }}
+              </span>
+            </div>
+
+            <div class="mt-2 p-2 bg-light rounded border small text-secondary" ng-if="item.notes">
+              <strong>Debrief Notes:</strong> {{ item.notes }}
+            </div>
+          </div>
+
+          <div class="col-12 col-lg-4 text-lg-end">
+            <div class="d-flex justify-content-lg-end align-items-center gap-2">
+              <button class="btn btn-sm btn-outline-primary" type="button" ng-click="vm.openEditModal(item)">
+                <i class="bi bi-pencil me-1"></i> Edit Notes
+              </button>
+              <button class="btn btn-sm btn-outline-danger" type="button" ng-click="vm.confirmDelete(item)">
+                <i class="bi bi-trash"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB 3: All Interviews -->
+  <div ng-if="!vm.isLoading && vm.activeTab === 'all'">
+    <div class="empty-state-card" ng-if="vm.interviews.length === 0">
+      <div class="empty-state-icon-circle">
+        <i class="bi bi-camera-video"></i>
+      </div>
+      <h2 class="empty-state-title">No Interviews Tracked</h2>
+      <p class="empty-state-text">Start tracking your interview preparation by scheduling a round.</p>
+      <button class="btn btn-command-primary" type="button" ng-click="vm.openCreateModal()">
+        <i class="bi bi-calendar-plus me-1"></i> Schedule Interview
+      </button>
+    </div>
+
+    <div class="d-flex flex-column gap-3" ng-if="vm.interviews.length > 0">
+      <div class="card bg-slate-card border shadow-sm p-3" ng-repeat="item in vm.interviews track by item.id">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+          <div>
+            <span class="fw-bold text-dark me-2">{{ item.roundName }}</span>
+            <span class="badge" ng-class="vm.getTypeBadgeClass(item.interviewType)">{{ item.interviewType }}</span>
+            <span class="badge ms-1" ng-class="vm.getStatusBadgeClass(item.status)">{{ item.status }}</span>
+            <div class="small text-slate-muted mt-1">
+              {{ item.companyName }} &bull; {{ item.jobTitle }}
+              <span ng-if="item.scheduledAt">&bull; {{ item.scheduledAt | date:'MMM d, yyyy h:mm a' }}</span>
+            </div>
+          </div>
+          <div class="d-flex gap-2">
+            <a ng-href="{{ item.meetingUrl }}" target="_blank" class="btn btn-sm btn-outline-success" ng-if="item.meetingUrl">
+              <i class="bi bi-camera-video"></i>
+            </a>
+            <button class="btn btn-sm btn-outline-primary" ng-click="vm.openEditModal(item)"><i class="bi bi-pencil"></i></button>
+            <button class="btn btn-sm btn-outline-danger" ng-click="vm.confirmDelete(item)"><i class="bi bi-trash"></i></button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Schedule / Edit Interview -->
+  <div class="modal fade" id="interviewFormModal" tabindex="-1" aria-labelledby="interviewFormModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content">
+        <div class="modal-header border-bottom pb-3">
+          <h5 class="modal-title fw-bold" id="interviewFormModalLabel">
+            <i class="bi me-2 text-primary" ng-class="vm.modalMode === 'create' ? 'bi-calendar-plus' : 'bi-pencil-square'"></i>
+            {{ vm.modalMode === 'create' ? 'Schedule Interview Round' : 'Edit Interview Details' }}
+          </h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+
+        <form ng-submit="vm.saveInterview()" novalidate>
+          <div class="modal-body p-4">
+            <div class="row g-3">
+              <!-- Application Select -->
+              <div class="col-12">
+                <label class="form-label fw-semibold">Job Application <span class="text-danger">*</span></label>
+                <select class="form-select" 
+                        ng-model="vm.formData.application_id" 
+                        ng-disabled="vm.modalMode === 'edit'"
+                        required>
+                  <option value="" disabled>-- Select Application --</option>
+                  <option ng-repeat="app in vm.applications track by app.id" ng-value="app.id">
+                    {{ app.jobTitle }} at {{ app.companyName }} ({{ app.status }})
+                  </option>
+                </select>
+                <div class="text-danger small mt-1" ng-if="vm.formErrors.application_id">{{ vm.formErrors.application_id }}</div>
+              </div>
+
+              <!-- Round Name -->
+              <div class="col-12 col-md-8">
+                <label class="form-label fw-semibold">Round Name <span class="text-danger">*</span></label>
+                <input type="text" 
+                       class="form-control" 
+                       placeholder="e.g. Technical Screen, System Design, Bar Raiser" 
+                       ng-model="vm.formData.round_name" 
+                       required>
+                <div class="text-danger small mt-1" ng-if="vm.formErrors.round_name">{{ vm.formErrors.round_name }}</div>
+              </div>
+
+              <!-- Interview Type -->
+              <div class="col-12 col-md-4">
+                <label class="form-label fw-semibold">Type</label>
+                <select class="form-select" ng-model="vm.formData.interview_type">
+                  <option value="VIDEO">Video Call</option>
+                  <option value="TECHNICAL">Technical</option>
+                  <option value="PHONE">Phone Screen</option>
+                  <option value="HR">HR / Recruiter</option>
+                  <option value="BEHAVIORAL">Behavioral</option>
+                  <option value="ONSITE">Onsite</option>
+                  <option value="OTHER">Other</option>
+                </select>
+              </div>
+
+              <!-- Date -->
+              <div class="col-12 col-md-5">
+                <label class="form-label fw-semibold">Date <span class="text-danger">*</span></label>
+                <input type="date" class="form-control" ng-model="vm.formData.scheduled_date" required>
+                <div class="text-danger small mt-1" ng-if="vm.formErrors.scheduled_date">{{ vm.formErrors.scheduled_date }}</div>
+              </div>
+
+              <!-- Time -->
+              <div class="col-6 col-md-4">
+                <label class="form-label fw-semibold">Time</label>
+                <input type="time" class="form-control" ng-model="vm.formData.scheduled_time">
+              </div>
+
+              <!-- Duration -->
+              <div class="col-6 col-md-3">
+                <label class="form-label fw-semibold">Duration (min)</label>
+                <input type="number" class="form-control" min="5" max="480" step="5" ng-model="vm.formData.duration_minutes">
+              </div>
+
+              <!-- Meeting Link -->
+              <div class="col-12 col-md-7">
+                <label class="form-label fw-semibold">Meeting URL / Link</label>
+                <div class="input-group">
+                  <span class="input-group-text bg-white text-muted"><i class="bi bi-link-45deg"></i></span>
+                  <input type="url" class="form-control" placeholder="https://meet.google.com/xyz or Zoom URL" ng-model="vm.formData.meeting_link">
+                </div>
+              </div>
+
+              <!-- Location -->
+              <div class="col-12 col-md-5">
+                <label class="form-label fw-semibold">Location / Room</label>
+                <input type="text" class="form-control" placeholder="e.g. Remote or Floor 4 Room 2" ng-model="vm.formData.location">
+              </div>
+
+              <!-- Interviewer Name -->
+              <div class="col-12 col-md-6">
+                <label class="form-label fw-semibold">Interviewer Name / Panel</label>
+                <input type="text" class="form-control" placeholder="e.g. Alice Chen (Eng Director)" ng-model="vm.formData.interviewer">
+              </div>
+
+              <!-- Interviewer Email -->
+              <div class="col-12 col-md-6">
+                <label class="form-label fw-semibold">Interviewer Email</label>
+                <input type="email" class="form-control" placeholder="e.g. alice@company.com" ng-model="vm.formData.interviewer_email">
+              </div>
+
+              <!-- Status -->
+              <div class="col-12 col-md-6">
+                <label class="form-label fw-semibold">Status</label>
+                <select class="form-select" ng-model="vm.formData.status">
+                  <option value="SCHEDULED">Scheduled</option>
+                  <option value="COMPLETED">Completed</option>
+                  <option value="RESCHEDULED">Rescheduled</option>
+                  <option value="CANCELLED">Cancelled</option>
+                  <option value="NO_SHOW">No Show</option>
+                </select>
+              </div>
+
+              <!-- Notes -->
+              <div class="col-12">
+                <label class="form-label fw-semibold">Preparation & Debrief Notes</label>
+                <textarea class="form-control" 
+                          rows="3" 
+                          placeholder="Focus areas, coding problem topics, questions for the interviewer, follow-ups..." 
+                          ng-model="vm.formData.notes"></textarea>
+              </div>
+            </div>
+          </div>
+
+          <div class="modal-footer border-top pt-3">
+            <button type="button" class="btn btn-command-secondary" data-bs-dismiss="modal">Cancel</button>
+            <button type="submit" class="btn btn-command-primary" ng-disabled="vm.isSaving">
+              <span class="spinner-border spinner-border-sm me-1" role="status" ng-if="vm.isSaving"></span>
+              {{ vm.modalMode === 'create' ? 'Schedule Interview' : 'Save Changes' }}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Delete Confirmation -->
+  <div class="modal fade" id="deleteInterviewModal" tabindex="-1" aria-labelledby="deleteInterviewModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header border-bottom">
+          <h5 class="modal-title fw-bold text-danger" id="deleteInterviewModalLabel">
+            <i class="bi bi-trash me-2"></i> Delete Interview Round
+          </h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body p-4">
+          <p class="mb-2">Are you sure you want to delete this interview?</p>
+          <div class="p-3 bg-light rounded border" ng-if="vm.interviewToDelete">
+            <div class="fw-bold text-dark">{{ vm.interviewToDelete.roundName }}</div>
+            <div class="small text-slate-muted">{{ vm.interviewToDelete.companyName }} &bull; {{ vm.interviewToDelete.jobTitle }}</div>
+          </div>
+          <p class="small text-danger mt-2 mb-0">This action cannot be undone.</p>
+        </div>
+        <div class="modal-footer border-top">
+          <button type="button" class="btn btn-command-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-danger" ng-click="vm.deleteInterview()" ng-disabled="vm.isSaving">
+            <span class="spinner-border spinner-border-sm me-1" role="status" ng-if="vm.isSaving"></span>
+            Delete Round
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

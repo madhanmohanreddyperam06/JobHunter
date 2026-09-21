@@ -1,0 +1,342 @@
+<div class="view-container">
+  <!-- Page Header -->
+  <div class="page-header">
+    <div>
+      <h1 class="page-header-title">Dashboard</h1>
+      <p class="page-header-subtitle">Welcome back. Here is the operational overview of your job search pipeline.</p>
+    </div>
+    <div class="page-header-actions">
+      <a href="#/applications" class="btn btn-command-primary">
+        <i class="bi bi-plus-lg"></i> Add Application
+      </a>
+    </div>
+  </div>
+
+  <!-- 4 KPI Stat Cards -->
+  <div class="row g-3 mb-4">
+    <div class="col-12 col-sm-6 col-xl-3">
+      <stat-card title="Applications" 
+                 count="vm.stats.applications !== undefined ? vm.stats.applications : 0" 
+                 icon="bi-briefcase-fill" 
+                 color="blue" 
+                 subtitle="Total tracked applications">
+      </stat-card>
+    </div>
+    <div class="col-12 col-sm-6 col-xl-3">
+      <stat-card title="Assessments" 
+                 count="vm.stats.assessments !== undefined ? vm.stats.assessments : 0" 
+                 icon="bi-pencil-square" 
+                 color="amber" 
+                 subtitle="Coding & technical tests">
+      </stat-card>
+    </div>
+    <div class="col-12 col-sm-6 col-xl-3">
+      <stat-card title="Interviews" 
+                 count="vm.stats.interviews !== undefined ? vm.stats.interviews : 0" 
+                 icon="bi-camera-video-fill" 
+                 color="purple" 
+                 subtitle="Active interview rounds">
+      </stat-card>
+    </div>
+    <div class="col-12 col-sm-6 col-xl-3">
+      <stat-card title="Offers" 
+                 count="vm.stats.offers !== undefined ? vm.stats.offers : 0" 
+                 icon="bi-trophy-fill" 
+                 color="green" 
+                 subtitle="Received offers">
+      </stat-card>
+    </div>
+  </div>
+
+  <!-- Active Resume Status Banner -->
+  <div class="card bg-surface border-slate mb-4 shadow-sm" ng-if="vm.totalResumes > 0">
+    <div class="card-body py-2 px-3 d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-2">
+      <div class="d-flex align-items-center gap-2">
+        <i class="bi bi-file-earmark-person-fill text-primary fs-5"></i>
+        <span class="fs-sm text-white fw-semibold">Active Resume:</span>
+        <span class="fs-sm text-info fw-bold" ng-if="vm.activeResume">{{ vm.activeResume.name }} ({{ vm.activeResume.versionLabel }})</span>
+        <span class="fs-sm text-muted" ng-if="!vm.activeResume">None designated</span>
+        <span class="badge bg-secondary bg-opacity-25 text-muted fs-xs ms-1">{{ vm.totalResumes }} total in library</span>
+      </div>
+      <a href="#/resumes" class="btn btn-sm btn-outline-light py-1 px-2 fs-xs text-nowrap">
+        Manage Resumes <i class="bi bi-arrow-right ms-1"></i>
+      </a>
+    </div>
+  </div>
+
+  <!-- Section 1: Application Pipeline Breakdown -->
+  <div class="card bg-slate-card p-4 mb-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <div>
+        <h2 class="h5 mb-1 fw-bold text-dark">Application Pipeline</h2>
+        <p class="text-slate-muted small mb-0">High-level distribution of opportunities across all pipeline phases</p>
+      </div>
+      <a href="#/kanban" class="btn btn-sm btn-command-secondary">
+        <i class="bi bi-kanban me-1"></i> Open Kanban
+      </a>
+    </div>
+
+    <div class="row g-2">
+      <div class="col-6 col-md-4 col-lg-2" ng-repeat="stage in vm.pipelineStages">
+        <div class="p-3 bg-light rounded-3 border text-center">
+          <div class="d-flex justify-content-center align-items-center gap-2 mb-1">
+            <i class="bi" ng-class="stage.icon + ' ' + stage.color"></i>
+            <span class="small fw-semibold text-secondary">{{ stage.label }}</span>
+          </div>
+          <div class="h4 mb-0 fw-bold text-dark">{{ stage.count }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row g-4">
+    <!-- Left Column: Recent Applications & Upcoming Interviews -->
+    <div class="col-12 col-lg-7">
+      <!-- Section 2: Recent Applications -->
+      <div class="card bg-slate-card p-4 mb-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <div>
+            <h2 class="h5 mb-1 fw-bold text-dark">Recent Applications</h2>
+            <p class="text-slate-muted small mb-0">Latest opportunities added to your command center</p>
+          </div>
+          <a href="#/applications" class="small fw-semibold text-primary">View All <i class="bi bi-arrow-right"></i></a>
+        </div>
+
+        <div class="d-flex flex-column gap-3">
+          <div ng-repeat="job in vm.recentApplications track by job.id">
+            <job-card job="job"></job-card>
+          </div>
+          <div class="p-4 bg-light rounded-3 border text-center" ng-if="!vm.isLoading && vm.recentApplications.length === 0">
+            <i class="bi bi-briefcase text-muted fs-2 mb-2 d-block"></i>
+            <p class="text-secondary fw-semibold mb-1">No applications tracked yet</p>
+            <span class="text-slate-muted small d-block mb-3">Add your first job application to monitor it here.</span>
+            <a href="#/applications" class="btn btn-sm btn-command-primary">
+              <i class="bi bi-plus-lg me-1"></i> Add Application
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 3: Upcoming Interviews -->
+      <div class="card bg-slate-card p-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <div>
+            <h2 class="h5 mb-1 fw-bold text-dark">Upcoming Interviews</h2>
+            <p class="text-slate-muted small mb-0">Rounds scheduled in the next 7 days</p>
+          </div>
+          <a href="#/interviews" class="btn btn-sm btn-command-secondary">
+            <i class="bi bi-calendar-event me-1"></i> View Schedule
+          </a>
+        </div>
+
+        <div class="d-flex flex-column gap-2" ng-if="vm.upcomingInterviews.length > 0">
+          <div class="p-3 bg-light rounded-3 border d-flex justify-content-between align-items-center flex-wrap gap-2" 
+               ng-repeat="interview in vm.upcomingInterviews track by interview.id">
+            <div>
+              <div class="d-flex align-items-center gap-2 mb-1">
+                <span class="fw-bold text-dark">{{ interview.roundName }}</span>
+                <span class="badge bg-purple-subtle text-purple border border-purple-subtle small">{{ interview.interviewType }}</span>
+                <span class="badge bg-warning-subtle text-dark border border-warning-subtle small fw-semibold" ng-if="interview.scheduledAt">
+                  <i class="bi bi-alarm me-1"></i>{{ vm.getCountdown(interview.scheduledAt) }}
+                </span>
+              </div>
+              <div class="small text-slate-muted">
+                <strong class="text-secondary">{{ interview.companyName }}</strong> &bull; {{ interview.jobTitle }}
+                <span class="ms-1" ng-if="interview.scheduledAt">&bull; {{ interview.scheduledAt | date:'EEE, MMM d @ h:mm a' }}</span>
+              </div>
+            </div>
+            <div class="d-flex gap-2">
+              <a ng-href="{{ interview.meetingUrl }}" target="_blank" class="btn btn-sm btn-success" ng-if="interview.meetingUrl">
+                <i class="bi bi-box-arrow-up-right me-1"></i> Join
+              </a>
+              <a href="#/interviews" class="btn btn-sm btn-outline-secondary">
+                <i class="bi bi-chevron-right"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <div class="p-4 bg-light rounded-3 border text-center" ng-if="!vm.isLoading && vm.upcomingInterviews.length === 0">
+          <i class="bi bi-calendar-check fs-2 text-muted mb-2 d-block"></i>
+          <p class="text-secondary fw-semibold mb-1">No upcoming interviews</p>
+          <span class="text-slate-muted small d-block mb-3">Schedule interview rounds to stay prepared.</span>
+          <a href="#/interviews" class="btn btn-sm btn-command-primary">
+            <i class="bi bi-calendar-plus me-1"></i> Schedule Round
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Column: Tasks, Application Statistics & Activity -->
+    <div class="col-12 col-lg-5">
+      <!-- Section: Action Items & Tasks -->
+      <div class="card bg-slate-card p-4 mb-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <div>
+            <h2 class="h5 mb-1 fw-bold text-dark">Action Items</h2>
+            <div class="d-flex gap-2 align-items-center text-slate-muted small">
+              <span>{{ vm.taskStats.pending }} pending</span>
+              <span>&bull;</span>
+              <span class="text-warning fw-semibold">{{ vm.taskStats.due_today }} due today</span>
+              <span ng-if="vm.taskStats.overdue > 0">&bull;</span>
+              <span class="text-danger fw-bold" ng-if="vm.taskStats.overdue > 0">{{ vm.taskStats.overdue }} overdue</span>
+            </div>
+          </div>
+          <a href="#/tasks" class="small fw-semibold text-primary">View All Tasks <i class="bi bi-arrow-right"></i></a>
+        </div>
+
+        <div class="d-flex flex-column gap-2" ng-if="vm.pendingTasks.length > 0">
+          <div class="p-2 px-3 bg-light rounded-3 border d-flex align-items-center gap-2" 
+               ng-repeat="task in vm.pendingTasks track by task.id">
+            <input type="checkbox" 
+                   class="form-check-input mt-0 cursor-pointer" 
+                   ng-checked="task.status === 'COMPLETED'" 
+                   ng-click="vm.toggleTask(task)"
+                   title="Mark complete">
+            <div class="flex-grow-1 text-truncate">
+              <span class="fw-semibold text-dark small d-block text-truncate">{{ task.title }}</span>
+              <span class="text-slate-muted" style="font-size: 0.75rem;">
+                <span ng-if="task.companyName">{{ task.companyName }} &bull; </span>
+                <span ng-class="{ 'text-danger fw-bold': task.isOverdue }">
+                  {{ task.dueDate ? (task.dueDate | date:'MMM d') : 'No deadline' }}
+                </span>
+              </span>
+            </div>
+            <span class="badge" 
+                  ng-class="{
+                    'bg-danger-subtle text-danger': task.priority === 'URGENT',
+                    'bg-warning-subtle text-warning': task.priority === 'HIGH',
+                    'bg-primary-subtle text-primary': task.priority === 'MEDIUM',
+                    'bg-secondary-subtle text-secondary': task.priority === 'LOW'
+                  }" 
+                  style="font-size: 0.7rem;">
+              {{ task.priority }}
+            </span>
+          </div>
+        </div>
+
+        <div class="p-3 bg-light rounded-3 border text-center" ng-if="!vm.isLoading && vm.pendingTasks.length === 0">
+          <i class="bi bi-check2-circle text-success fs-3 mb-1 d-block"></i>
+          <p class="text-secondary fw-semibold small mb-1">All action items completed!</p>
+          <a href="#/tasks" class="btn btn-sm btn-command-primary py-1 px-2" style="font-size: 0.8rem;">
+            <i class="bi bi-plus me-1"></i> Add Task
+          </a>
+        </div>
+      </div>
+
+      <!-- Section 4: Application Statistics -->
+      <div class="card bg-slate-card p-4 mb-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <div>
+            <h2 class="h5 mb-1 fw-bold text-dark">Application Statistics</h2>
+            <p class="text-slate-muted small mb-0">Funnel conversion performance</p>
+          </div>
+          <a href="#/analytics" class="small fw-semibold text-primary">Details <i class="bi bi-chevron-right"></i></a>
+        </div>
+
+        <div class="d-flex flex-column gap-3">
+          <div>
+            <div class="d-flex justify-content-between small fw-semibold mb-1">
+              <span>Applied to Assessment</span>
+              <span class="text-primary">28.5% (12/42)</span>
+            </div>
+            <div class="progress" style="height: 6px;">
+              <div class="progress-bar bg-primary" role="progressbar" style="width: 28.5%"></div>
+            </div>
+          </div>
+
+          <div>
+            <div class="d-flex justify-content-between small fw-semibold mb-1">
+              <span>Assessment to Interview</span>
+              <span class="text-warning">66.6% (8/12)</span>
+            </div>
+            <div class="progress" style="height: 6px;">
+              <div class="progress-bar bg-warning" role="progressbar" style="width: 66.6%"></div>
+            </div>
+          </div>
+
+          <div>
+            <div class="d-flex justify-content-between small fw-semibold mb-1">
+              <span>Interview to Offer</span>
+              <span class="text-success">25.0% (2/8)</span>
+            </div>
+            <div class="progress" style="height: 6px;">
+              <div class="progress-bar bg-success" role="progressbar" style="width: 25.0%"></div>
+            </div>
+          </div>
+        </div>
+
+        <hr class="my-3 text-muted opacity-25">
+
+        <div class="d-flex justify-content-between align-items-center text-slate-muted small">
+          <span>Overall Conversion Rate</span>
+          <span class="badge bg-success-subtle text-success border border-success-subtle fw-bold">4.8% Offer Rate</span>
+        </div>
+      </div>
+
+      <!-- Section 5: Job Descriptions Intelligence Widget -->
+      <div class="card bg-slate-card p-4 mb-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <div>
+            <h2 class="h5 mb-1 fw-bold text-dark">Job Intelligence Workspace</h2>
+            <p class="text-slate-muted small mb-0">{{ vm.totalJobDescriptions }} captured descriptions</p>
+          </div>
+          <a href="#/job-descriptions" class="small fw-semibold text-primary">Workspace <i class="bi bi-arrow-right"></i></a>
+        </div>
+
+        <div class="d-flex flex-column gap-2" ng-if="vm.recentJobDescriptions.length > 0">
+          <div class="p-2 px-3 bg-light rounded-3 border d-flex justify-content-between align-items-center gap-2"
+               ng-repeat="jd in vm.recentJobDescriptions track by jd.id">
+            <div class="text-truncate">
+              <span class="fw-semibold text-dark small d-block text-truncate">{{ jd.title }}</span>
+              <span class="text-slate-muted" style="font-size: 0.75rem;">
+                {{ jd.company_name }} &bull; {{ jd.capturedAtDate | date:'MMM d' }}
+              </span>
+            </div>
+            <span class="badge"
+                  ng-class="{
+                    'bg-info-subtle text-info': jd.work_arrangement === 'REMOTE',
+                    'bg-warning-subtle text-warning': jd.work_arrangement === 'HYBRID',
+                    'bg-secondary-subtle text-secondary': jd.work_arrangement === 'ONSITE' || jd.work_arrangement === 'UNKNOWN'
+                  }"
+                  style="font-size: 0.7rem;">
+              {{ jd.workArrangementLabel }}
+            </span>
+          </div>
+        </div>
+
+        <div class="p-3 bg-light rounded-3 border text-center" ng-if="!vm.isLoading && vm.recentJobDescriptions.length === 0">
+          <i class="bi bi-file-earmark-text text-muted fs-3 mb-1 d-block"></i>
+          <p class="text-secondary fw-semibold small mb-1">No job descriptions captured yet</p>
+          <a href="#/job-descriptions" class="btn btn-sm btn-command-primary py-1 px-2" style="font-size: 0.8rem;">
+            <i class="bi bi-plus me-1"></i> Capture JD
+          </a>
+        </div>
+      </div>
+
+      <!-- Quick Guidance Card -->
+      <div class="card bg-slate-card p-4">
+        <h2 class="h6 mb-2 fw-bold text-dark">
+          <i class="bi bi-info-circle-fill text-primary me-1"></i> Quick Action Hub
+        </h2>
+        <p class="text-slate-muted small mb-3">
+          Command Center provides a personal operating system for all job-search pipelines. Navigate using the sidebar to explore features.
+        </p>
+        <div class="d-grid gap-2">
+          <a href="#/kanban" class="btn btn-sm btn-outline-secondary text-start">
+            <i class="bi bi-kanban me-2 text-primary"></i> Switch to Kanban Board View
+          </a>
+          <a href="#/job-descriptions" class="btn btn-sm btn-outline-secondary text-start">
+            <i class="bi bi-file-earmark-text me-2 text-primary"></i> Job Descriptions Workspace
+          </a>
+          <a href="#/resumes" class="btn btn-sm btn-outline-secondary text-start">
+            <i class="bi bi-file-earmark-person me-2 text-primary"></i> Manage Target Resumes
+          </a>
+          <a href="#/tasks" class="btn btn-sm btn-outline-secondary text-start">
+            <i class="bi bi-check2-square me-2 text-primary"></i> Review Action Items
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,604 @@
+<div class="view-container">
+  <!-- Toast Feedback Notification -->
+  <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 1200" ng-if="vm.toastMessage">
+    <div class="toast show align-items-center text-white bg-dark border border-secondary shadow-lg" role="alert">
+      <div class="d-flex align-items-center p-2">
+        <i class="bi fs-5 me-2 ms-1" ng-class="{
+          'bi-check-circle-fill text-success': vm.toastType === 'success',
+          'bi-exclamation-triangle-fill text-warning': vm.toastType === 'warning',
+          'bi-x-circle-fill text-danger': vm.toastType === 'danger',
+          'bi-info-circle-fill text-info': vm.toastType === 'info'
+        }"></i>
+        <div class="toast-body py-1 flex-grow-1 fs-sm">
+          {{ vm.toastMessage }}
+        </div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" ng-click="vm.dismissToast()"></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Contextual Mode Alert Banner (When opened from an Application or Job Description) -->
+  <div class="card border-primary mb-4 shadow-sm" style="background: rgba(13, 110, 253, 0.08);" ng-if="vm.contextualAppId || vm.contextualJdId">
+    <div class="card-body p-3">
+      <div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-3">
+        <div class="d-flex align-items-center gap-2">
+          <span class="badge bg-primary fs-6 px-3 py-2">
+            <i class="bi" ng-class="vm.contextualAppId ? 'bi-briefcase-fill' : 'bi-file-earmark-text-fill'"></i>
+            <span ng-if="vm.contextualAppId">Contextual Mode: Application #{{ vm.contextualAppId }}</span>
+            <span ng-if="vm.contextualJdId">Contextual Mode: Job Description #{{ vm.contextualJdId }}</span>
+          </span>
+          <span class="fw-bold text-light" ng-if="vm.contextualApp">
+            {{ vm.contextualApp.job_title }} &bull; {{ vm.contextualApp.company.name }}
+          </span>
+          <span class="fw-bold text-light" ng-if="vm.contextualJd">
+            {{ vm.contextualJd.title }} &bull; {{ vm.contextualJd.company_name }}
+          </span>
+        </div>
+        <div class="d-flex gap-2">
+          <a class="btn btn-sm btn-outline-light" href="#/applications" ng-if="vm.contextualAppId">
+            <i class="bi bi-arrow-left"></i> Applications
+          </a>
+          <a class="btn btn-sm btn-outline-light" href="#/job-descriptions" ng-if="vm.contextualJdId">
+            <i class="bi bi-arrow-left"></i> Job Descriptions
+          </a>
+          <button class="btn btn-sm btn-outline-secondary" type="button" ng-click="vm.exitContextualMode()">
+            <i class="bi bi-x-lg"></i> Clear Context
+          </button>
+        </div>
+      </div>
+
+      <!-- Mapped Skills Pills List -->
+      <div class="d-flex align-items-center gap-2 flex-wrap">
+        <span class="text-muted fs-sm fw-semibold">Mapped Skills ({{ vm.contextualMappedSkills.length }}):</span>
+        <span ng-if="!vm.contextualMappedSkills.length" class="text-muted fs-sm fst-italic">
+          No skills mapped yet. Click "Attach to this Record" below to link skills from your catalog.
+        </span>
+
+        <div class="badge bg-surface border border-secondary text-light p-2 d-flex align-items-center gap-2"
+             ng-repeat="mapped in vm.contextualMappedSkills track by mapped.id">
+          <i class="bi bi-star-fill text-warning" ng-if="mapped.is_primary" title="Primary Skill"></i>
+          <span class="fw-bold">{{ mapped.skill_name }}</span>
+
+          <!-- Application specific tags -->
+          <span class="badge" ng-class="mapped.proficiencyMeta.badgeClass" ng-if="vm.contextualAppId">
+            {{ mapped.proficiency }}
+          </span>
+          <span class="badge bg-dark border border-secondary text-muted" ng-if="vm.contextualAppId && mapped.years_experience">
+            {{ mapped.years_experience }} yrs
+          </span>
+
+          <!-- JD specific tags -->
+          <span class="badge" ng-class="mapped.importanceMeta.badgeClass" ng-if="vm.contextualJdId">
+            {{ mapped.importance }}
+          </span>
+          <span class="badge bg-dark border border-secondary text-muted" ng-if="vm.contextualJdId">
+            {{ mapped.source_section }}
+          </span>
+
+          <!-- Actions -->
+          <button class="btn btn-link p-0 text-info" type="button" title="Edit mapping" ng-click="vm.openEditMappingModal(mapped)">
+            <i class="bi bi-pencil-fill fs-xs"></i>
+          </button>
+          <button class="btn btn-link p-0 text-danger" type="button" title="Unlink" ng-click="vm.removeMapping(mapped)">
+            <i class="bi bi-x-circle-fill fs-xs"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Page Header -->
+  <div class="page-header d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+    <div>
+      <h1 class="page-header-title d-flex align-items-center gap-2 mb-1">
+        <i class="bi bi-cpu-fill text-primary"></i>
+        <span>Skill Intelligence & Master Catalog</span>
+      </h1>
+      <p class="page-header-subtitle text-muted mb-0">
+        Normalized, reusable technical and professional competencies for job applications, JD requirements, and interview readiness.
+      </p>
+    </div>
+    <div class="page-header-actions d-flex gap-2">
+      <button class="btn btn-command-primary d-flex align-items-center gap-2" type="button" ng-click="vm.openCreateModal()">
+        <i class="bi bi-plus-circle-fill"></i>
+        <span>Add New Skill</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Metric KPI Cards -->
+  <div class="row g-3 mb-4">
+    <div class="col-6 col-md-3">
+      <div class="card bg-surface border-slate shadow-sm h-100">
+        <div class="card-body p-3 d-flex align-items-center">
+          <div class="rounded p-3 bg-primary bg-opacity-10 text-primary me-3">
+            <i class="bi bi-collection-fill fs-4"></i>
+          </div>
+          <div>
+            <div class="text-muted fs-xs text-uppercase fw-semibold">Catalog Skills</div>
+            <div class="fs-4 fw-bold text-light">{{ vm.stats.total_skills }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-6 col-md-3">
+      <div class="card bg-surface border-slate shadow-sm h-100">
+        <div class="card-body p-3 d-flex align-items-center">
+          <div class="rounded p-3 bg-success bg-opacity-10 text-success me-3">
+            <i class="bi bi-briefcase-fill fs-4"></i>
+          </div>
+          <div>
+            <div class="text-muted fs-xs text-uppercase fw-semibold">In Applications</div>
+            <div class="fs-4 fw-bold text-light">{{ vm.stats.skills_in_applications }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-6 col-md-3">
+      <div class="card bg-surface border-slate shadow-sm h-100">
+        <div class="card-body p-3 d-flex align-items-center">
+          <div class="rounded p-3 bg-warning bg-opacity-10 text-warning me-3">
+            <i class="bi bi-file-earmark-text-fill fs-4"></i>
+          </div>
+          <div>
+            <div class="text-muted fs-xs text-uppercase fw-semibold">In Job Postings</div>
+            <div class="fs-4 fw-bold text-light">{{ vm.stats.skills_in_job_descriptions }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-6 col-md-3">
+      <div class="card bg-surface border-slate shadow-sm h-100">
+        <div class="card-body p-3 d-flex align-items-center">
+          <div class="rounded p-3 bg-info bg-opacity-10 text-info me-3">
+            <i class="bi bi-award-fill fs-4"></i>
+          </div>
+          <div>
+            <div class="text-muted fs-xs text-uppercase fw-semibold">Top Tracked Skill</div>
+            <div class="fs-6 fw-bold text-light text-truncate" style="max-width: 140px;">
+              {{ vm.stats.top_used_skills[0].name || '—' }}
+            </div>
+            <div class="fs-xs text-muted" ng-if="vm.stats.top_used_skills[0]">
+              {{ vm.stats.top_used_skills[0].total_usage }} links
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Search, Filter & Sort Controls -->
+  <div class="card bg-surface border-slate shadow-sm mb-4">
+    <div class="card-body p-3">
+      <div class="row g-2 align-items-center">
+        <!-- Search Input -->
+        <div class="col-12 col-md-5">
+          <div class="input-group">
+            <span class="input-group-text bg-dark border-secondary text-muted">
+              <i class="bi bi-search"></i>
+            </span>
+            <input type="text" class="form-control bg-dark border-secondary text-light"
+                   placeholder="Search skills, aliases, descriptions..."
+                   ng-model="vm.filters.search"
+                   ng-change="vm.onSearchChange()" />
+            <button class="btn btn-outline-secondary" type="button" ng-if="vm.filters.search" ng-click="vm.filters.search = ''; vm.loadSkills()">
+              <i class="bi bi-x-lg"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Category Dropdown Filter -->
+        <div class="col-6 col-md-4">
+          <select class="form-select bg-dark border-secondary text-light"
+                  ng-model="vm.filters.category"
+                  ng-change="vm.loadSkills()">
+            <option value="">All Categories ({{ vm.stats.total_skills }})</option>
+            <option ng-repeat="cat in vm.categories" ng-value="cat.value">
+              {{ cat.label }} ({{ vm.stats.category_counts[cat.value] || 0 }})
+            </option>
+          </select>
+        </div>
+
+        <!-- Sorting Dropdown -->
+        <div class="col-6 col-md-3">
+          <select class="form-select bg-dark border-secondary text-light"
+                  ng-model="vm.filters.sort_by"
+                  ng-change="vm.onSortChange()">
+            <option value="name">Sort by: Name (A-Z)</option>
+            <option value="category">Sort by: Category</option>
+            <option value="created_at">Sort by: Date Added</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Category Filter Quick Pills -->
+      <div class="d-flex gap-1 flex-wrap mt-3 pt-2 border-top border-secondary border-opacity-25">
+        <button class="btn btn-sm"
+                ng-class="!vm.filters.category ? 'btn-primary' : 'btn-outline-secondary'"
+                ng-click="vm.setCategoryFilter('')">
+          All
+        </button>
+        <button class="btn btn-sm"
+                ng-repeat="cat in vm.categories | limitTo: 8"
+                ng-class="vm.filters.category === cat.value ? 'btn-primary' : 'btn-outline-secondary'"
+                ng-click="vm.setCategoryFilter(cat.value)">
+          <i class="bi me-1" ng-class="cat.icon"></i>
+          {{ cat.label }}
+          <span class="badge bg-dark ms-1" ng-if="vm.stats.category_counts[cat.value]">
+            {{ vm.stats.category_counts[cat.value] }}
+          </span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div class="text-center py-5" ng-if="vm.isLoading">
+    <div class="spinner-border text-primary mb-3" role="status"></div>
+    <div class="text-muted">Loading skill catalog...</div>
+  </div>
+
+  <!-- Empty State -->
+  <div class="card bg-surface border-slate text-center py-5 my-4" ng-if="!vm.isLoading && !vm.skills.length">
+    <div class="card-body">
+      <div class="rounded-circle bg-dark d-inline-flex p-4 mb-3">
+        <i class="bi bi-cpu text-muted fs-1"></i>
+      </div>
+      <h4 class="text-light">No Skills Found</h4>
+      <p class="text-muted fs-sm mx-auto" style="max-width: 480px;">
+        <span ng-if="vm.filters.search || vm.filters.category">
+          No skills match your active search filters. Try clearing filters or searching for another term.
+        </span>
+        <span ng-if="!vm.filters.search && !vm.filters.category">
+          Your skill catalog is currently empty. Add your core programming languages, frameworks, cloud tools, or methodologies to start organizing competencies.
+        </span>
+      </p>
+      <button class="btn btn-command-primary mt-2" type="button" ng-click="vm.openCreateModal()">
+        <i class="bi bi-plus-circle-fill me-1"></i> Add Your First Skill
+      </button>
+    </div>
+  </div>
+
+  <!-- Skills Catalog Grid -->
+  <div class="row g-3" ng-if="!vm.isLoading && vm.skills.length">
+    <div class="col-12 col-md-6 col-lg-4" ng-repeat="skill in vm.skills track by skill.id">
+      <div class="card bg-surface border-slate shadow-sm h-100 position-relative">
+        <div class="card-body p-3 d-flex flex-column">
+          <!-- Skill Card Header -->
+          <div class="d-flex justify-content-between align-items-start mb-2">
+            <div>
+              <h5 class="card-title text-light fw-bold mb-1 d-flex align-items-center gap-2">
+                <span>{{ skill.name }}</span>
+              </h5>
+              <span class="badge" ng-class="skill.categoryMeta.badgeClass">
+                <i class="bi me-1" ng-class="skill.categoryMeta.icon"></i>
+                {{ skill.categoryMeta.label }}
+              </span>
+            </div>
+
+            <!-- Card Actions Dropdown -->
+            <div class="dropdown">
+              <button class="btn btn-sm btn-link text-muted p-1" type="button" data-bs-toggle="dropdown">
+                <i class="bi bi-three-dots-vertical"></i>
+              </button>
+              <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end shadow">
+                <li>
+                  <button class="dropdown-item" type="button" ng-click="vm.openEditModal(skill)">
+                    <i class="bi bi-pencil-fill me-2 text-info"></i> Edit Skill
+                  </button>
+                </li>
+                <li>
+                  <button class="dropdown-item text-danger" type="button" ng-click="vm.openDeleteModal(skill)">
+                    <i class="bi bi-trash-fill me-2"></i> Delete
+                  </button>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- Aliases Pills -->
+          <div class="mb-2" ng-if="skill.aliasList && skill.aliasList.length">
+            <span class="badge bg-dark border border-secondary text-muted me-1 mb-1" ng-repeat="alias in skill.aliasList">
+              {{ alias }}
+            </span>
+          </div>
+
+          <!-- Description Preview -->
+          <p class="card-text text-muted fs-sm mb-3 flex-grow-1" ng-if="skill.description">
+            {{ skill.description }}
+          </p>
+          <p class="card-text text-muted fs-sm fst-italic mb-3 flex-grow-1" ng-if="!skill.description">
+            No description provided.
+          </p>
+
+          <!-- Usage Metrics Bar -->
+          <div class="d-flex justify-content-between align-items-center pt-2 border-top border-secondary border-opacity-25 fs-xs text-muted mb-2">
+            <span>
+              <i class="bi bi-briefcase text-success me-1"></i>
+              {{ skill.application_count }} Apps
+            </span>
+            <span>
+              <i class="bi bi-file-earmark-text text-warning me-1"></i>
+              {{ skill.job_description_count }} JDs
+            </span>
+          </div>
+
+          <!-- Contextual Action Button (When in Contextual Mode) -->
+          <div class="mt-auto" ng-if="vm.contextualAppId || vm.contextualJdId">
+            <div ng-if="vm.isSkillMappedToContext(skill.id)" class="d-grid">
+              <button class="btn btn-sm btn-outline-success disabled text-success" type="button">
+                <i class="bi bi-check-circle-fill me-1"></i> Attached to this Record
+              </button>
+            </div>
+            <div ng-if="!vm.isSkillMappedToContext(skill.id)" class="d-grid">
+              <button class="btn btn-sm btn-outline-primary" type="button" ng-click="vm.openAddMappingModal(skill)">
+                <i class="bi bi-link-45deg me-1"></i> Attach to this Record
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Pagination Controls -->
+  <div class="d-flex justify-content-between align-items-center mt-4 flex-wrap gap-2" ng-if="!vm.isLoading && vm.totalPages > 1">
+    <div class="text-muted fs-sm">
+      Showing page {{ vm.page }} of {{ vm.totalPages }} ({{ vm.total }} total skills)
+    </div>
+    <div class="btn-group">
+      <button class="btn btn-sm btn-outline-secondary"
+              ng-disabled="vm.page <= 1"
+              ng-click="vm.goToPage(vm.page - 1)">
+        <i class="bi bi-chevron-left"></i> Prev
+      </button>
+      <button class="btn btn-sm"
+              ng-repeat="p in [].constructor(vm.totalPages) track by $index"
+              ng-class="($index + 1) === vm.page ? 'btn-primary' : 'btn-outline-secondary'"
+              ng-click="vm.goToPage($index + 1)">
+        {{ $index + 1 }}
+      </button>
+      <button class="btn btn-sm btn-outline-secondary"
+              ng-disabled="vm.page >= vm.totalPages"
+              ng-click="vm.goToPage(vm.page + 1)">
+        Next <i class="bi bi-chevron-right"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- ================================================================= -->
+  <!-- Create / Edit Skill Catalog Modal                                 -->
+  <!-- ================================================================= -->
+  <div class="modal fade show d-block" tabindex="-1" style="background: rgba(0,0,0,0.7);" ng-if="vm.formModalOpen">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content bg-surface border-slate text-light shadow-lg">
+        <div class="modal-header border-secondary">
+          <h5 class="modal-title d-flex align-items-center gap-2">
+            <i class="bi" ng-class="vm.formMode === 'create' ? 'bi-plus-circle text-primary' : 'bi-pencil text-info'"></i>
+            <span>{{ vm.formMode === 'create' ? 'Add New Skill to Catalog' : 'Edit Skill' }}</span>
+          </h5>
+          <button type="button" class="btn-close btn-close-white" ng-click="vm.closeFormModal()"></button>
+        </div>
+
+        <div class="modal-body">
+          <div class="alert alert-danger fs-sm" ng-if="vm.formError">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i> {{ vm.formError }}
+          </div>
+
+          <form id="skillForm" ng-submit="vm.saveSkill()">
+            <!-- Skill Name -->
+            <div class="mb-3">
+              <label class="form-label fw-semibold">Skill Name <span class="text-danger">*</span></label>
+              <input type="text" class="form-control bg-dark border-secondary text-light"
+                     placeholder="e.g. Python, React, PostgreSQL, Docker, AWS"
+                     ng-model="vm.formData.name" required />
+              <div class="form-text text-muted fs-xs">
+                Names are automatically case-insensitive and whitespace-normalized to prevent catalog duplication.
+              </div>
+            </div>
+
+            <!-- Category -->
+            <div class="mb-3">
+              <label class="form-label fw-semibold">Category <span class="text-danger">*</span></label>
+              <select class="form-select bg-dark border-secondary text-light"
+                      ng-model="vm.formData.category" required>
+                <option ng-repeat="cat in vm.categories" ng-value="cat.value">
+                  {{ cat.label }}
+                </option>
+              </select>
+            </div>
+
+            <!-- Aliases / Synonyms -->
+            <div class="mb-3">
+              <label class="form-label fw-semibold">Aliases / Synonyms</label>
+              <input type="text" class="form-control bg-dark border-secondary text-light"
+                     placeholder="e.g. k8s, kube, kubernetes"
+                     ng-model="vm.formData.aliases" />
+              <div class="form-text text-muted fs-xs">
+                Comma-separated alternative names for quick search and future parsing alignment.
+              </div>
+            </div>
+
+            <!-- Description / Notes -->
+            <div class="mb-3">
+              <label class="form-label fw-semibold">Description / Notes</label>
+              <textarea class="form-control bg-dark border-secondary text-light" rows="3"
+                        placeholder="Core applications, focus areas, or framework specializations..."
+                        ng-model="vm.formData.description"></textarea>
+            </div>
+          </form>
+        </div>
+
+        <div class="modal-footer border-secondary">
+          <button type="button" class="btn btn-outline-secondary" ng-click="vm.closeFormModal()" ng-disabled="vm.isSubmitting">
+            Cancel
+          </button>
+          <button type="submit" form="skillForm" class="btn btn-command-primary" ng-disabled="vm.isSubmitting">
+            <span class="spinner-border spinner-border-sm me-1" ng-if="vm.isSubmitting"></span>
+            <span>{{ vm.formMode === 'create' ? 'Save Skill' : 'Update Skill' }}</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================================================================= -->
+  <!-- Delete Skill Confirmation Modal                                   -->
+  <!-- ================================================================= -->
+  <div class="modal fade show d-block" tabindex="-1" style="background: rgba(0,0,0,0.7);" ng-if="vm.deleteModalOpen">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content bg-surface border-slate text-light shadow-lg">
+        <div class="modal-header border-secondary">
+          <h5 class="modal-title d-flex align-items-center gap-2 text-danger">
+            <i class="bi bi-trash-fill"></i>
+            <span>Delete Skill</span>
+          </h5>
+          <button type="button" class="btn-close btn-close-white" ng-click="vm.closeDeleteModal()"></button>
+        </div>
+
+        <div class="modal-body">
+          <div class="alert alert-danger fs-sm" ng-if="vm.deleteError">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i> {{ vm.deleteError }}
+          </div>
+
+          <p>
+            Are you sure you want to permanently delete <strong>{{ vm.deleteTarget.name }}</strong> from your catalog?
+          </p>
+
+          <div class="alert alert-warning fs-xs" ng-if="vm.deleteTarget.application_count > 0 || vm.deleteTarget.job_description_count > 0">
+            <i class="bi bi-exclamation-circle-fill me-1"></i>
+            This skill is currently referenced by <strong>{{ vm.deleteTarget.application_count }}</strong> application(s)
+            and <strong>{{ vm.deleteTarget.job_description_count }}</strong> job description(s).
+            You must unlink this skill from those records before it can be removed from the catalog.
+          </div>
+        </div>
+
+        <div class="modal-footer border-secondary">
+          <button type="button" class="btn btn-outline-secondary" ng-click="vm.closeDeleteModal()" ng-disabled="vm.isDeleting">
+            Cancel
+          </button>
+          <button type="button" class="btn btn-danger" ng-click="vm.confirmDelete()" ng-disabled="vm.isDeleting">
+            <span class="spinner-border spinner-border-sm me-1" ng-if="vm.isDeleting"></span>
+            <span>Delete Skill</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================================================================= -->
+  <!-- Contextual Mapping Modal (Attach/Update Skill to Application/JD)  -->
+  <!-- ================================================================= -->
+  <div class="modal fade show d-block" tabindex="-1" style="background: rgba(0,0,0,0.7);" ng-if="vm.mappingModalOpen">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content bg-surface border-slate text-light shadow-lg">
+        <div class="modal-header border-secondary">
+          <h5 class="modal-title d-flex align-items-center gap-2">
+            <i class="bi bi-link-45deg text-primary"></i>
+            <span ng-if="vm.contextualAppId">
+              {{ vm.mappingMode === 'add' ? 'Attach Skill to Application' : 'Edit Application Skill' }}
+            </span>
+            <span ng-if="vm.contextualJdId">
+              {{ vm.mappingMode === 'add' ? 'Attach Skill to Job Description' : 'Edit Job Description Skill' }}
+            </span>
+          </h5>
+          <button type="button" class="btn-close btn-close-white" ng-click="vm.closeMappingModal()"></button>
+        </div>
+
+        <div class="modal-body">
+          <div class="alert alert-danger fs-sm" ng-if="vm.mappingError">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i> {{ vm.mappingError }}
+          </div>
+
+          <form id="mappingForm" ng-submit="vm.saveMapping()">
+            <!-- Skill Selection -->
+            <div class="mb-3">
+              <label class="form-label fw-semibold">Skill <span class="text-danger">*</span></label>
+              <div ng-if="vm.mappingMode === 'edit' || vm.mappingData.skill_id">
+                <input type="text" class="form-control bg-dark border-secondary text-light"
+                       ng-model="vm.mappingData.skill_name" disabled />
+              </div>
+              <div ng-if="vm.mappingMode === 'add' && !vm.mappingData.skill_id">
+                <select class="form-select bg-dark border-secondary text-light"
+                        ng-model="vm.mappingData.skill_id" required>
+                  <option value="" disabled selected>Select a skill from your catalog...</option>
+                  <option ng-repeat="s in vm.skills track by s.id" ng-value="s.id" ng-disabled="vm.isSkillMappedToContext(s.id)">
+                    {{ s.name }} ({{ s.categoryMeta.label }}) {{ vm.isSkillMappedToContext(s.id) ? '— Already Attached' : '' }}
+                  </option>
+                </select>
+              </div>
+            </div>
+
+            <!-- APPLICATION FIELDS: Proficiency, Years, Primary -->
+            <div ng-if="vm.contextualAppId">
+              <div class="mb-3">
+                <label class="form-label fw-semibold">Proficiency Level</label>
+                <select class="form-select bg-dark border-secondary text-light"
+                        ng-model="vm.mappingData.proficiency">
+                  <option ng-repeat="p in vm.proficiencyLevels" ng-value="p.value">
+                    {{ p.label }}
+                  </option>
+                </select>
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label fw-semibold">Years of Hands-On Experience</label>
+                <input type="number" step="0.5" min="0" max="50"
+                       class="form-control bg-dark border-secondary text-light"
+                       placeholder="e.g. 3.5"
+                       ng-model="vm.mappingData.years_experience" />
+              </div>
+
+              <div class="form-check mb-3">
+                <input class="form-check-input" type="checkbox" id="primarySkillCheck"
+                       ng-model="vm.mappingData.is_primary" />
+                <label class="form-check-label fw-semibold" for="primarySkillCheck">
+                  Mark as Primary / Core Highlight Skill
+                </label>
+                <div class="form-text text-muted fs-xs">
+                  Primary skills are highlighted on Kanban cards and application dashboards.
+                </div>
+              </div>
+            </div>
+
+            <!-- JOB DESCRIPTION FIELDS: Importance, Source Section -->
+            <div ng-if="vm.contextualJdId">
+              <div class="mb-3">
+                <label class="form-label fw-semibold">Importance Level</label>
+                <select class="form-select bg-dark border-secondary text-light"
+                        ng-model="vm.mappingData.importance">
+                  <option ng-repeat="imp in vm.importanceLevels" ng-value="imp.value">
+                    {{ imp.label }}
+                  </option>
+                </select>
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label fw-semibold">Source Section in Job Posting</label>
+                <select class="form-select bg-dark border-secondary text-light"
+                        ng-model="vm.mappingData.source_section">
+                  <option ng-repeat="sec in vm.sourceSections" ng-value="sec.value">
+                    {{ sec.label }}
+                  </option>
+                </select>
+              </div>
+            </div>
+          </form>
+        </div>
+
+        <div class="modal-footer border-secondary">
+          <button type="button" class="btn btn-outline-secondary" ng-click="vm.closeMappingModal()" ng-disabled="vm.isSubmittingMapping">
+            Cancel
+          </button>
+          <button type="submit" form="mappingForm" class="btn btn-command-primary" ng-disabled="vm.isSubmittingMapping">
+            <span class="spinner-border spinner-border-sm me-1" ng-if="vm.isSubmittingMapping"></span>
+            <span>Save Mapping</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

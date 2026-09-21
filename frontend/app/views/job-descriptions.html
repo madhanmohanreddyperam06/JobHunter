@@ -1,0 +1,803 @@
+<div class="view-container">
+  <!-- Copy Feedback Toast Notification -->
+  <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 1200" ng-if="vm.copyToastMessage">
+    <div class="toast show align-items-center text-white bg-dark border border-secondary shadow-lg" role="alert">
+      <div class="d-flex align-items-center p-2">
+        <i class="bi bi-clipboard-check-fill text-success fs-5 me-2 ms-1"></i>
+        <div class="toast-body py-1 flex-grow-1 fs-sm">
+          {{ vm.copyToastMessage }}
+        </div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" ng-click="vm.copyToastMessage = ''"></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Page Header -->
+  <div class="page-header d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+    <div>
+      <h1 class="page-header-title d-flex align-items-center gap-2 mb-1">
+        <i class="bi bi-file-earmark-text text-primary"></i>
+        <span>Job Descriptions Workspace</span>
+      </h1>
+      <p class="page-header-subtitle text-muted mb-0">
+        Structured job intelligence, multi-section tracking, and immutable posting archives linked 1-to-1 to your applications.
+      </p>
+    </div>
+    <div class="page-header-actions d-flex gap-2">
+      <button class="btn btn-command-primary d-flex align-items-center gap-2" type="button" ng-click="vm.openCreateModal()">
+        <i class="bi bi-plus-circle-fill"></i>
+        <span>Capture New JD</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Workspace Metric Cards -->
+  <div class="row g-3 mb-4">
+    <div class="col-6 col-md-3">
+      <div class="card bg-surface border-slate shadow-sm h-100">
+        <div class="card-body p-3 d-flex align-items-center">
+          <div class="rounded p-3 bg-primary bg-opacity-10 text-primary me-3">
+            <i class="bi bi-journal-bookmark-fill fs-4"></i>
+          </div>
+          <div>
+            <div class="text-muted fs-xs text-uppercase fw-semibold">Total Saved</div>
+            <div class="fs-4 fw-bold text-light">{{ vm.stats.total }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-6 col-md-3">
+      <div class="card bg-surface border-slate shadow-sm h-100">
+        <div class="card-body p-3 d-flex align-items-center">
+          <div class="rounded p-3 bg-info bg-opacity-10 text-info me-3">
+            <i class="bi bi-laptop fs-4"></i>
+          </div>
+          <div>
+            <div class="text-muted fs-xs text-uppercase fw-semibold">Remote Roles</div>
+            <div class="fs-4 fw-bold text-light">{{ vm.stats.remote }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-6 col-md-3">
+      <div class="card bg-surface border-slate shadow-sm h-100">
+        <div class="card-body p-3 d-flex align-items-center">
+          <div class="rounded p-3 bg-warning bg-opacity-10 text-warning me-3">
+            <i class="bi bi-buildings fs-4"></i>
+          </div>
+          <div>
+            <div class="text-muted fs-xs text-uppercase fw-semibold">Hybrid Roles</div>
+            <div class="fs-4 fw-bold text-light">{{ vm.stats.hybrid }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-6 col-md-3">
+      <div class="card bg-surface border-slate shadow-sm h-100">
+        <div class="card-body p-3 d-flex align-items-center">
+          <div class="rounded p-3 bg-success bg-opacity-10 text-success me-3">
+            <i class="bi bi-briefcase-fill fs-4"></i>
+          </div>
+          <div>
+            <div class="text-muted fs-xs text-uppercase fw-semibold">Full-Time</div>
+            <div class="fs-4 fw-bold text-light">{{ vm.stats.fullTime }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filter & Search Toolbar -->
+  <div class="card bg-surface border-slate mb-4 shadow-sm">
+    <div class="card-body p-3">
+      <div class="row g-2 align-items-center">
+        <!-- Search Input -->
+        <div class="col-12 col-md-4">
+          <div class="input-group input-group-sm">
+            <span class="input-group-text bg-transparent border-slate text-muted">
+              <i class="bi bi-search"></i>
+            </span>
+            <input type="text"
+                   class="form-control border-slate"
+                   placeholder="Search title, company, requirements, sections..."
+                   ng-model="vm.filters.search"
+                   ng-change="vm.onSearchChange()">
+            <button class="btn btn-outline-secondary border-slate"
+                    type="button"
+                    ng-if="vm.filters.search"
+                    ng-click="vm.filters.search = ''; vm.applyFilters()">
+              <i class="bi bi-x"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Employment Type Filter -->
+        <div class="col-6 col-md-2">
+          <select class="form-select form-select-sm border-slate"
+                  ng-model="vm.filters.employment_type"
+                  ng-change="vm.applyFilters()">
+            <option value="">All Job Types</option>
+            <option value="FULL_TIME">Full-time</option>
+            <option value="PART_TIME">Part-time</option>
+            <option value="CONTRACT">Contract</option>
+            <option value="INTERNSHIP">Internship</option>
+            <option value="TEMPORARY">Temporary</option>
+            <option value="OTHER">Other</option>
+          </select>
+        </div>
+
+        <!-- Work Arrangement Filter -->
+        <div class="col-6 col-md-2">
+          <select class="form-select form-select-sm border-slate"
+                  ng-model="vm.filters.work_arrangement"
+                  ng-change="vm.applyFilters()">
+            <option value="">All Arrangements</option>
+            <option value="REMOTE">Remote</option>
+            <option value="HYBRID">Hybrid</option>
+            <option value="ONSITE">On-site</option>
+            <option value="UNKNOWN">Unknown</option>
+          </select>
+        </div>
+
+        <!-- Sort Control -->
+        <div class="col-6 col-md-2">
+          <select class="form-select form-select-sm border-slate"
+                  ng-model="vm.filters.sort_by"
+                  ng-change="vm.applyFilters()">
+            <option value="captured_at">Captured Date</option>
+            <option value="created_at">Created Date</option>
+            <option value="title">Job Title</option>
+            <option value="company_name">Company Name</option>
+          </select>
+        </div>
+
+        <div class="col-6 col-md-2 d-flex justify-content-end align-items-center gap-2">
+          <select class="form-select form-select-sm border-slate w-auto"
+                  ng-model="vm.filters.sort_order"
+                  ng-change="vm.applyFilters()">
+            <option value="desc">Desc</option>
+            <option value="asc">Asc</option>
+          </select>
+          <button class="btn btn-sm btn-outline-secondary border-slate"
+                  type="button"
+                  title="Reset Filters"
+                  ng-click="vm.resetFilters()">
+            <i class="bi bi-arrow-counterclockwise"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading Indicator -->
+  <div class="text-center py-5" ng-if="vm.isLoading">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Loading job descriptions...</span>
+    </div>
+    <p class="text-muted fs-sm mt-2">Loading job descriptions...</p>
+  </div>
+
+  <!-- Main Content Grid -->
+  <div ng-if="!vm.isLoading">
+    <!-- Empty State -->
+    <div class="card bg-surface border-slate text-center p-5 shadow-sm"
+         ng-if="vm.jobDescriptions.length === 0">
+      <div class="mb-3">
+        <i class="bi bi-file-earmark-text text-muted" style="font-size: 3.5rem;"></i>
+      </div>
+      <h3 class="fs-5 fw-bold text-light mb-2">No Job Descriptions Found</h3>
+      <p class="text-muted fs-sm mx-auto mb-4" style="max-width: 480px;">
+        <span ng-if="vm.filters.search || vm.filters.employment_type || vm.filters.work_arrangement">
+          No job descriptions matched your current search filters. Try clearing filters or searching another keyword.
+        </span>
+        <span ng-if="!vm.filters.search && !vm.filters.employment_type && !vm.filters.work_arrangement">
+          You haven't captured any job descriptions yet. Archive posting details, requirements, and responsibilities directly linked to your applications.
+        </span>
+      </p>
+      <div>
+        <button class="btn btn-outline-secondary border-slate btn-sm me-2"
+                type="button"
+                ng-if="vm.filters.search || vm.filters.employment_type || vm.filters.work_arrangement"
+                ng-click="vm.resetFilters()">
+          Clear Filters
+        </button>
+        <button class="btn btn-command-primary btn-sm"
+                type="button"
+                ng-click="vm.openCreateModal()">
+          <i class="bi bi-plus-circle me-1"></i> Capture First JD
+        </button>
+      </div>
+    </div>
+
+    <!-- Job Descriptions Grid -->
+    <div class="row g-3" ng-if="vm.jobDescriptions.length > 0">
+      <div class="col-12 col-md-6 col-lg-4" ng-repeat="jd in vm.jobDescriptions track by jd.id">
+        <div class="card bg-surface border-slate h-100 shadow-sm d-flex flex-column hover-lift">
+          <div class="card-body p-3 d-flex flex-column flex-grow-1">
+            <!-- Header Badges -->
+            <div class="d-flex justify-content-between align-items-start mb-2 gap-2">
+              <span class="badge bg-secondary bg-opacity-25 text-light border border-secondary text-truncate" style="max-width: 160px;">
+                <i class="bi bi-building me-1"></i>{{ jd.company_name }}
+              </span>
+              <div class="d-flex gap-1 flex-wrap justify-content-end">
+                <span class="badge"
+                      ng-class="{
+                        'bg-info bg-opacity-25 text-info border border-info': jd.work_arrangement === 'REMOTE',
+                        'bg-warning bg-opacity-25 text-warning border border-warning': jd.work_arrangement === 'HYBRID',
+                        'bg-secondary bg-opacity-25 text-secondary border border-secondary': jd.work_arrangement === 'ONSITE' || jd.work_arrangement === 'UNKNOWN'
+                      }">
+                  {{ jd.workArrangementLabel }}
+                </span>
+                <span class="badge bg-primary bg-opacity-25 text-primary border border-primary">
+                  {{ jd.employmentTypeLabel }}
+                </span>
+              </div>
+            </div>
+
+            <!-- Role Title -->
+            <h5 class="card-title text-light fw-bold fs-6 mb-1 text-truncate cursor-pointer hover-text-primary"
+                title="{{ jd.title }}"
+                ng-click="vm.openDetailModal(jd)">
+              {{ jd.title }}
+            </h5>
+
+            <!-- Meta details -->
+            <div class="text-muted fs-xs mb-3 d-flex flex-column gap-1">
+              <div ng-if="jd.location" class="text-truncate">
+                <i class="bi bi-geo-alt me-1 text-secondary"></i>{{ jd.location }}
+              </div>
+              <div ng-if="jd.salary" class="text-truncate text-success">
+                <i class="bi bi-cash-stack me-1"></i>{{ jd.salary }}
+              </div>
+              <div>
+                <i class="bi bi-calendar3 me-1 text-secondary"></i>Captured {{ jd.capturedAtDate | date:'mediumDate' }}
+              </div>
+            </div>
+
+            <!-- Section Availability Pills -->
+            <div class="mb-3">
+              <div class="text-muted fs-xs mb-1 fw-semibold">Captured Sections ({{ jd.sectionsCount }}/5):</div>
+              <div class="d-flex flex-wrap gap-1">
+                <span class="badge fs-xs" ng-class="jd.hasDescription ? 'bg-secondary text-light' : 'bg-dark text-muted border border-secondary'">
+                  Overview
+                </span>
+                <span class="badge fs-xs" ng-class="jd.hasResponsibilities ? 'bg-secondary text-light' : 'bg-dark text-muted border border-secondary'">
+                  Duties
+                </span>
+                <span class="badge fs-xs" ng-class="jd.hasRequirements ? 'bg-secondary text-light' : 'bg-dark text-muted border border-secondary'">
+                  Reqs
+                </span>
+                <span class="badge fs-xs" ng-class="jd.hasQualifications ? 'bg-secondary text-light' : 'bg-dark text-muted border border-secondary'">
+                  Quals
+                </span>
+                <span class="badge fs-xs" ng-class="jd.hasBenefits ? 'bg-secondary text-light' : 'bg-dark text-muted border border-secondary'">
+                  Benefits
+                </span>
+              </div>
+            </div>
+
+            <!-- Posting URL if available -->
+            <div class="mb-3" ng-if="jd.job_url">
+              <a ng-href="{{ jd.job_url }}" target="_blank" rel="noopener noreferrer" class="fs-xs text-info text-decoration-none text-truncate d-block">
+                <i class="bi bi-box-arrow-up-right me-1"></i>View Original Posting
+              </a>
+            </div>
+
+            <!-- Action buttons in card footer -->
+            <div class="mt-auto pt-2 border-top border-slate d-flex justify-content-between align-items-center gap-1">
+              <button class="btn btn-sm btn-command-primary px-2 py-1"
+                      type="button"
+                      ng-click="vm.openDetailModal(jd)">
+                <i class="bi bi-eye me-1"></i> View JD
+              </button>
+              <div class="btn-group btn-group-sm">
+                <button class="btn btn-outline-secondary border-slate py-1"
+                        type="button"
+                        title="Copy Entire Job Description"
+                        ng-click="vm.copyEntireJd(jd)">
+                  <i class="bi bi-clipboard"></i>
+                </button>
+                <button class="btn btn-outline-secondary border-slate py-1"
+                        type="button"
+                        title="Edit Job Description"
+                        ng-click="vm.openEditModal(jd)">
+                  <i class="bi bi-pencil"></i>
+                </button>
+                <button class="btn btn-outline-danger border-slate py-1"
+                        type="button"
+                        title="Delete Job Description"
+                        ng-click="vm.openDeleteModal(jd)">
+                  <i class="bi bi-trash"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pagination Controls -->
+    <div class="d-flex justify-content-between align-items-center mt-4 flex-wrap gap-2" ng-if="vm.totalPages > 1">
+      <div class="text-muted fs-xs">
+        Showing {{ (vm.page - 1) * vm.pageSize + 1 }} to {{ ((vm.page * vm.pageSize) > vm.total) ? vm.total : (vm.page * vm.pageSize) }} of {{ vm.total }} records
+      </div>
+      <div class="btn-group btn-group-sm">
+        <button class="btn btn-outline-secondary border-slate"
+                type="button"
+                ng-disabled="vm.page <= 1"
+                ng-click="vm.goToPage(vm.page - 1)">
+          <i class="bi bi-chevron-left"></i> Previous
+        </button>
+        <button class="btn btn-outline-secondary border-slate"
+                type="button"
+                ng-repeat="p in [].constructor(vm.totalPages) track by $index"
+                ng-class="{ 'active btn-primary text-white': vm.page === ($index + 1) }"
+                ng-click="vm.goToPage($index + 1)">
+          {{ $index + 1 }}
+        </button>
+        <button class="btn btn-outline-secondary border-slate"
+                type="button"
+                ng-disabled="vm.page >= vm.totalPages"
+                ng-click="vm.goToPage(vm.page + 1)">
+          Next <i class="bi bi-chevron-right"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- DETAIL MODAL -->
+  <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.75);" ng-if="vm.detailModalOpen">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable">
+      <div class="modal-content bg-surface border-slate text-light">
+        <!-- Header -->
+        <div class="modal-header border-slate p-3 d-flex justify-content-between align-items-start">
+          <div>
+            <div class="d-flex align-items-center gap-2 mb-1 flex-wrap">
+              <h4 class="modal-title fw-bold text-light mb-0">{{ vm.selectedJd.title }}</h4>
+              <span class="badge bg-secondary bg-opacity-25 text-light border border-secondary">
+                {{ vm.selectedJd.company_name }}
+              </span>
+              <span class="badge"
+                    ng-class="{
+                      'bg-info bg-opacity-25 text-info border border-info': vm.selectedJd.work_arrangement === 'REMOTE',
+                      'bg-warning bg-opacity-25 text-warning border border-warning': vm.selectedJd.work_arrangement === 'HYBRID',
+                      'bg-secondary bg-opacity-25 text-secondary border border-secondary': vm.selectedJd.work_arrangement === 'ONSITE' || vm.selectedJd.work_arrangement === 'UNKNOWN'
+                    }">
+                {{ vm.selectedJd.workArrangementLabel }}
+              </span>
+              <span class="badge bg-primary bg-opacity-25 text-primary border border-primary">
+                {{ vm.selectedJd.employmentTypeLabel }}
+              </span>
+            </div>
+            <div class="text-muted fs-xs d-flex gap-3 flex-wrap">
+              <span ng-if="vm.selectedJd.location"><i class="bi bi-geo-alt me-1"></i>{{ vm.selectedJd.location }}</span>
+              <span ng-if="vm.selectedJd.salary" class="text-success"><i class="bi bi-cash-stack me-1"></i>{{ vm.selectedJd.salary }}</span>
+              <span ng-if="vm.selectedJd.experience_required"><i class="bi bi-briefcase me-1"></i>{{ vm.selectedJd.experience_required }}</span>
+              <span><i class="bi bi-clock-history me-1"></i>Captured {{ vm.selectedJd.capturedAtDate | date:'medium' }}</span>
+            </div>
+          </div>
+          <div class="d-flex align-items-center gap-2">
+            <a ng-href="#/applications?id={{ vm.selectedJd.application_id }}"
+               class="btn btn-sm btn-outline-info border-slate"
+               title="Jump to linked application in pipeline">
+              <i class="bi bi-box-arrow-up-right me-1"></i> Linked Application
+            </a>
+            <button class="btn btn-sm btn-outline-secondary border-slate"
+                    type="button"
+                    title="Copy entire structured JD"
+                    ng-click="vm.copyEntireJd(vm.selectedJd)">
+              <i class="bi bi-clipboard me-1"></i> Copy All
+            </button>
+            <button type="button" class="btn-close btn-close-white" ng-click="vm.closeDetailModal()"></button>
+          </div>
+        </div>
+
+        <!-- Section Navigation Tabs -->
+        <div class="border-bottom border-slate px-3 pt-2 bg-dark bg-opacity-50">
+          <ul class="nav nav-tabs border-0 gap-1 fs-sm">
+            <li class="nav-item">
+              <button class="nav-link py-2 px-3 border-0 rounded-top text-light"
+                      ng-class="{ 'active bg-surface border-slate fw-bold text-primary': vm.activeDetailTab === 'all' }"
+                      ng-click="vm.setDetailTab('all')">
+                All Sections
+              </button>
+            </li>
+            <li class="nav-item">
+              <button class="nav-link py-2 px-3 border-0 rounded-top text-light"
+                      ng-class="{ 'active bg-surface border-slate fw-bold text-primary': vm.activeDetailTab === 'description' }"
+                      ng-click="vm.setDetailTab('description')">
+                Overview <span class="badge bg-secondary ms-1 fs-xs" ng-if="vm.selectedJd.hasDescription">✓</span>
+              </button>
+            </li>
+            <li class="nav-item">
+              <button class="nav-link py-2 px-3 border-0 rounded-top text-light"
+                      ng-class="{ 'active bg-surface border-slate fw-bold text-primary': vm.activeDetailTab === 'responsibilities' }"
+                      ng-click="vm.setDetailTab('responsibilities')">
+                Responsibilities <span class="badge bg-secondary ms-1 fs-xs" ng-if="vm.selectedJd.hasResponsibilities">✓</span>
+              </button>
+            </li>
+            <li class="nav-item">
+              <button class="nav-link py-2 px-3 border-0 rounded-top text-light"
+                      ng-class="{ 'active bg-surface border-slate fw-bold text-primary': vm.activeDetailTab === 'requirements' }"
+                      ng-click="vm.setDetailTab('requirements')">
+                Requirements <span class="badge bg-secondary ms-1 fs-xs" ng-if="vm.selectedJd.hasRequirements">✓</span>
+              </button>
+            </li>
+            <li class="nav-item">
+              <button class="nav-link py-2 px-3 border-0 rounded-top text-light"
+                      ng-class="{ 'active bg-surface border-slate fw-bold text-primary': vm.activeDetailTab === 'qualifications' }"
+                      ng-click="vm.setDetailTab('qualifications')">
+                Qualifications <span class="badge bg-secondary ms-1 fs-xs" ng-if="vm.selectedJd.hasQualifications">✓</span>
+              </button>
+            </li>
+            <li class="nav-item">
+              <button class="nav-link py-2 px-3 border-0 rounded-top text-light"
+                      ng-class="{ 'active bg-surface border-slate fw-bold text-primary': vm.activeDetailTab === 'benefits' }"
+                      ng-click="vm.setDetailTab('benefits')">
+                Benefits & Perks <span class="badge bg-secondary ms-1 fs-xs" ng-if="vm.selectedJd.hasBenefits">✓</span>
+              </button>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Body -->
+        <div class="modal-body p-4">
+          <!-- Overview / Description -->
+          <div class="card bg-dark bg-opacity-25 border-slate mb-3 shadow-none"
+               ng-if="vm.activeDetailTab === 'all' || vm.activeDetailTab === 'description'">
+            <div class="card-header border-slate bg-surface py-2 d-flex justify-content-between align-items-center">
+              <h6 class="mb-0 fw-semibold text-light">
+                <i class="bi bi-info-circle me-1 text-primary"></i> Job Overview & Description
+              </h6>
+              <button class="btn btn-sm btn-outline-secondary border-slate py-0 px-2 fs-xs"
+                      type="button"
+                      ng-disabled="!vm.selectedJd.hasDescription"
+                      ng-click="vm.copyToClipboard(vm.selectedJd.description, 'Job Overview', 'desc')">
+                <i class="bi bi-clipboard me-1"></i> Copy Section
+              </button>
+            </div>
+            <div class="card-body p-3">
+              <div ng-if="vm.selectedJd.hasDescription" class="text-light fs-sm" style="white-space: pre-wrap; line-height: 1.6;">{{ vm.selectedJd.description }}</div>
+              <div ng-if="!vm.selectedJd.hasDescription" class="text-muted fs-sm fst-italic">No general description recorded.</div>
+            </div>
+          </div>
+
+          <!-- Responsibilities -->
+          <div class="card bg-dark bg-opacity-25 border-slate mb-3 shadow-none"
+               ng-if="vm.activeDetailTab === 'all' || vm.activeDetailTab === 'responsibilities'">
+            <div class="card-header border-slate bg-surface py-2 d-flex justify-content-between align-items-center">
+              <h6 class="mb-0 fw-semibold text-light">
+                <i class="bi bi-list-check me-1 text-info"></i> Key Responsibilities & Duties
+              </h6>
+              <button class="btn btn-sm btn-outline-secondary border-slate py-0 px-2 fs-xs"
+                      type="button"
+                      ng-disabled="!vm.selectedJd.hasResponsibilities"
+                      ng-click="vm.copyToClipboard(vm.selectedJd.responsibilities, 'Responsibilities', 'resp')">
+                <i class="bi bi-clipboard me-1"></i> Copy Section
+              </button>
+            </div>
+            <div class="card-body p-3">
+              <div ng-if="vm.selectedJd.hasResponsibilities" class="text-light fs-sm" style="white-space: pre-wrap; line-height: 1.6;">{{ vm.selectedJd.responsibilities }}</div>
+              <div ng-if="!vm.selectedJd.hasResponsibilities" class="text-muted fs-sm fst-italic">No responsibilities recorded.</div>
+            </div>
+          </div>
+
+          <!-- Requirements -->
+          <div class="card bg-dark bg-opacity-25 border-slate mb-3 shadow-none"
+               ng-if="vm.activeDetailTab === 'all' || vm.activeDetailTab === 'requirements'">
+            <div class="card-header border-slate bg-surface py-2 d-flex justify-content-between align-items-center">
+              <h6 class="mb-0 fw-semibold text-light">
+                <i class="bi bi-check2-square me-1 text-warning"></i> Core Requirements & Skills
+              </h6>
+              <button class="btn btn-sm btn-outline-secondary border-slate py-0 px-2 fs-xs"
+                      type="button"
+                      ng-disabled="!vm.selectedJd.hasRequirements"
+                      ng-click="vm.copyToClipboard(vm.selectedJd.requirements, 'Requirements', 'req')">
+                <i class="bi bi-clipboard me-1"></i> Copy Section
+              </button>
+            </div>
+            <div class="card-body p-3">
+              <div ng-if="vm.selectedJd.hasRequirements" class="text-light fs-sm" style="white-space: pre-wrap; line-height: 1.6;">{{ vm.selectedJd.requirements }}</div>
+              <div ng-if="!vm.selectedJd.hasRequirements" class="text-muted fs-sm fst-italic">No requirements recorded.</div>
+            </div>
+          </div>
+
+          <!-- Qualifications -->
+          <div class="card bg-dark bg-opacity-25 border-slate mb-3 shadow-none"
+               ng-if="vm.activeDetailTab === 'all' || vm.activeDetailTab === 'qualifications'">
+            <div class="card-header border-slate bg-surface py-2 d-flex justify-content-between align-items-center">
+              <h6 class="mb-0 fw-semibold text-light">
+                <i class="bi bi-mortarboard me-1 text-success"></i> Preferred Qualifications & Education
+              </h6>
+              <button class="btn btn-sm btn-outline-secondary border-slate py-0 px-2 fs-xs"
+                      type="button"
+                      ng-disabled="!vm.selectedJd.hasQualifications"
+                      ng-click="vm.copyToClipboard(vm.selectedJd.qualifications, 'Qualifications', 'qual')">
+                <i class="bi bi-clipboard me-1"></i> Copy Section
+              </button>
+            </div>
+            <div class="card-body p-3">
+              <div ng-if="vm.selectedJd.hasQualifications" class="text-light fs-sm" style="white-space: pre-wrap; line-height: 1.6;">{{ vm.selectedJd.qualifications }}</div>
+              <div ng-if="!vm.selectedJd.hasQualifications" class="text-muted fs-sm fst-italic">No preferred qualifications recorded.</div>
+            </div>
+          </div>
+
+          <!-- Benefits -->
+          <div class="card bg-dark bg-opacity-25 border-slate mb-0 shadow-none"
+               ng-if="vm.activeDetailTab === 'all' || vm.activeDetailTab === 'benefits'">
+            <div class="card-header border-slate bg-surface py-2 d-flex justify-content-between align-items-center">
+              <h6 class="mb-0 fw-semibold text-light">
+                <i class="bi bi-gift me-1 text-danger"></i> Benefits, Perks & Compensation
+              </h6>
+              <button class="btn btn-sm btn-outline-secondary border-slate py-0 px-2 fs-xs"
+                      type="button"
+                      ng-disabled="!vm.selectedJd.hasBenefits"
+                      ng-click="vm.copyToClipboard(vm.selectedJd.benefits, 'Benefits', 'ben')">
+                <i class="bi bi-clipboard me-1"></i> Copy Section
+              </button>
+            </div>
+            <div class="card-body p-3">
+              <div ng-if="vm.selectedJd.hasBenefits" class="text-light fs-sm" style="white-space: pre-wrap; line-height: 1.6;">{{ vm.selectedJd.benefits }}</div>
+              <div ng-if="!vm.selectedJd.hasBenefits" class="text-muted fs-sm fst-italic">No benefits or perks recorded.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="modal-footer border-slate p-3 d-flex justify-content-between">
+          <div>
+            <button class="btn btn-outline-danger border-slate btn-sm"
+                    type="button"
+                    ng-click="vm.openDeleteModal(vm.selectedJd)">
+              <i class="bi bi-trash me-1"></i> Delete JD
+            </button>
+            <button class="btn btn-outline-secondary border-slate btn-sm ms-2"
+                    type="button"
+                    ng-click="vm.openEditModal(vm.selectedJd)">
+              <i class="bi bi-pencil me-1"></i> Edit Sections
+            </button>
+          </div>
+          <button type="button" class="btn btn-secondary btn-sm" ng-click="vm.closeDetailModal()">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CREATE / EDIT MODAL -->
+  <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.75);" ng-if="vm.formModalOpen">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+      <div class="modal-content bg-surface border-slate text-light">
+        <form ng-submit="vm.submitForm()" novalidate>
+          <!-- Header -->
+          <div class="modal-header border-slate p-3">
+            <h5 class="modal-title fw-bold">
+              <i class="bi" ng-class="vm.formMode === 'create' ? 'bi-plus-circle text-primary' : 'bi-pencil text-warning'"></i>
+              {{ vm.formMode === 'create' ? 'Capture Job Description' : 'Edit Job Description' }}
+            </h5>
+            <button type="button" class="btn-close btn-close-white" ng-click="vm.closeFormModal()"></button>
+          </div>
+
+          <!-- Body -->
+          <div class="modal-body p-4">
+            <div class="alert alert-danger fs-sm py-2" ng-if="vm.formError">
+              <i class="bi bi-exclamation-triangle-fill me-1"></i> {{ vm.formError }}
+            </div>
+
+            <!-- Application Selector (Create mode only) -->
+            <div class="mb-3" ng-if="vm.formMode === 'create'">
+              <label class="form-label fs-sm fw-semibold text-light">
+                Linked Application <span class="text-danger">*</span>
+              </label>
+              <select class="form-select border-slate"
+                      ng-model="vm.formData.application_id"
+                      ng-change="vm.onApplicationSelected()"
+                      required>
+                <option value="">-- Choose an Application to Link --</option>
+                <option ng-repeat="app in vm.availableApplications track by app.id"
+                        value="{{ app.id }}"
+                        ng-disabled="app.has_job_description">
+                  {{ app.job_title }} at {{ app.company.name }} ({{ app.status }}) {{ app.has_job_description ? '— [JD Already Attached]' : '' }}
+                </option>
+              </select>
+              <div class="form-text fs-xs text-muted">
+                Each job application can have exactly one structured job description attached.
+              </div>
+            </div>
+
+            <!-- Basic Details Row -->
+            <div class="row g-3 mb-3">
+              <div class="col-12 col-md-6">
+                <label class="form-label fs-sm fw-semibold text-light">
+                  Role Title <span class="text-danger">*</span>
+                </label>
+                <input type="text"
+                       class="form-control border-slate"
+                       placeholder="e.g. Senior Backend Engineer"
+                       ng-model="vm.formData.title"
+                       required>
+              </div>
+
+              <div class="col-12 col-md-6">
+                <label class="form-label fs-sm fw-semibold text-light">
+                  Company Name <span class="text-danger">*</span>
+                </label>
+                <input type="text"
+                       class="form-control border-slate"
+                       placeholder="e.g. Stripe, Inc."
+                       ng-model="vm.formData.company_name"
+                       required>
+              </div>
+            </div>
+
+            <!-- Work Arrangement & Type Row -->
+            <div class="row g-3 mb-3">
+              <div class="col-12 col-md-6">
+                <label class="form-label fs-sm fw-semibold text-light">Employment Type</label>
+                <select class="form-select border-slate" ng-model="vm.formData.employment_type">
+                  <option value="FULL_TIME">Full-time</option>
+                  <option value="PART_TIME">Part-time</option>
+                  <option value="CONTRACT">Contract</option>
+                  <option value="INTERNSHIP">Internship</option>
+                  <option value="TEMPORARY">Temporary</option>
+                  <option value="OTHER">Other</option>
+                </select>
+              </div>
+
+              <div class="col-12 col-md-6">
+                <label class="form-label fs-sm fw-semibold text-light">Work Arrangement</label>
+                <select class="form-select border-slate" ng-model="vm.formData.work_arrangement">
+                  <option value="HYBRID">Hybrid</option>
+                  <option value="REMOTE">Remote</option>
+                  <option value="ONSITE">On-site</option>
+                  <option value="UNKNOWN">Unknown</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Location & Salary Row -->
+            <div class="row g-3 mb-3">
+              <div class="col-12 col-md-6">
+                <label class="form-label fs-sm fw-semibold text-light">Location</label>
+                <input type="text"
+                       class="form-control border-slate"
+                       placeholder="e.g. San Francisco, CA / Remote US"
+                       ng-model="vm.formData.location">
+              </div>
+
+              <div class="col-12 col-md-6">
+                <label class="form-label fs-sm fw-semibold text-light">Salary / Compensation Range</label>
+                <input type="text"
+                       class="form-control border-slate"
+                       placeholder="e.g. $150,000 - $180,000 + Equity"
+                       ng-model="vm.formData.salary">
+              </div>
+            </div>
+
+            <!-- URL & Experience Row -->
+            <div class="row g-3 mb-4">
+              <div class="col-12 col-md-6">
+                <label class="form-label fs-sm fw-semibold text-light">Experience Required</label>
+                <input type="text"
+                       class="form-control border-slate"
+                       placeholder="e.g. 5+ years building distributed services"
+                       ng-model="vm.formData.experience_required">
+              </div>
+
+              <div class="col-12 col-md-6">
+                <label class="form-label fs-sm fw-semibold text-light">Job Posting URL</label>
+                <input type="url"
+                       class="form-control border-slate"
+                       placeholder="https://company.com/careers/job-id"
+                       ng-model="vm.formData.job_url">
+              </div>
+            </div>
+
+            <hr class="border-slate my-4">
+
+            <!-- Section-Separated Text Storage -->
+            <h6 class="fw-bold text-light mb-3">
+              <i class="bi bi-card-text text-primary me-1"></i> Structured Posting Sections
+            </h6>
+
+            <div class="mb-3">
+              <label class="form-label fs-sm fw-semibold text-light">
+                1. Job Overview & Company Summary
+              </label>
+              <textarea class="form-control border-slate font-monospace fs-sm"
+                        rows="4"
+                        placeholder="Paste general role summary, team mission, and high-level context..."
+                        ng-model="vm.formData.description"></textarea>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label fs-sm fw-semibold text-light">
+                2. Key Responsibilities & Day-to-Day Duties
+              </label>
+              <textarea class="form-control border-slate font-monospace fs-sm"
+                        rows="4"
+                        placeholder="Paste bullet points of what you will actually be doing day-to-day..."
+                        ng-model="vm.formData.responsibilities"></textarea>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label fs-sm fw-semibold text-light">
+                3. Core Requirements & Required Skills
+              </label>
+              <textarea class="form-control border-slate font-monospace fs-sm"
+                        rows="4"
+                        placeholder="Paste must-have technical proficiencies, required languages, years of experience..."
+                        ng-model="vm.formData.requirements"></textarea>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label fs-sm fw-semibold text-light">
+                4. Preferred Qualifications & Nice-to-Haves
+              </label>
+              <textarea class="form-control border-slate font-monospace fs-sm"
+                        rows="4"
+                        placeholder="Paste bonus points, preferred degrees, certifications, or niche tool experience..."
+                        ng-model="vm.formData.qualifications"></textarea>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label fs-sm fw-semibold text-light">
+                5. Benefits, Perks & Compensation Details
+              </label>
+              <textarea class="form-control border-slate font-monospace fs-sm"
+                        rows="3"
+                        placeholder="Paste 401(k), health insurance, PTO, stipends, or bonus structure..."
+                        ng-model="vm.formData.benefits"></textarea>
+            </div>
+          </div>
+
+          <!-- Footer -->
+          <div class="modal-footer border-slate p-3">
+            <button type="button" class="btn btn-outline-secondary border-slate btn-sm" ng-click="vm.closeFormModal()">Cancel</button>
+            <button type="submit" class="btn btn-command-primary btn-sm" ng-disabled="vm.isSubmitting">
+              <span class="spinner-border spinner-border-sm me-1" ng-if="vm.isSubmitting"></span>
+              {{ vm.formMode === 'create' ? 'Save Job Description' : 'Save Changes' }}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- DELETE CONFIRMATION MODAL -->
+  <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.75);" ng-if="vm.deleteModalOpen">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content bg-surface border-slate text-light">
+        <div class="modal-header border-slate p-3">
+          <h5 class="modal-title fw-bold text-danger">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i> Delete Job Description
+          </h5>
+          <button type="button" class="btn-close btn-close-white" ng-click="vm.closeDeleteModal()"></button>
+        </div>
+        <div class="modal-body p-4">
+          <div class="alert alert-danger fs-sm py-2" ng-if="vm.deleteError">
+            {{ vm.deleteError }}
+          </div>
+          <p class="fs-sm mb-3">
+            Are you sure you want to permanently delete the job description for <strong>{{ vm.deleteTarget.title }}</strong> at <strong>{{ vm.deleteTarget.company_name }}</strong>?
+          </p>
+          <div class="alert alert-info fs-xs py-2 mb-0 border-0 bg-info bg-opacity-10 text-info">
+            <i class="bi bi-info-circle-fill me-1"></i>
+            <strong>Important:</strong> Deleting this job description will <em>never</em> delete your associated job application. The application will remain intact in your command center pipeline.
+          </div>
+        </div>
+        <div class="modal-footer border-slate p-3">
+          <button type="button" class="btn btn-outline-secondary border-slate btn-sm" ng-click="vm.closeDeleteModal()" ng-disabled="vm.isDeleting">
+            Cancel
+          </button>
+          <button type="button" class="btn btn-danger btn-sm" ng-click="vm.submitDelete()" ng-disabled="vm.isDeleting">
+            <span class="spinner-border spinner-border-sm me-1" ng-if="vm.isDeleting"></span>
+            Delete Job Description
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

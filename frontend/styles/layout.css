@@ -1,0 +1,115 @@
+/* ==========================================================================
+   LAYOUT.CSS - Dashboard Shell, Navigation Grid, and Content Scrolling
+   Job Application Command Center (AngularJS 1.8.x)
+   ========================================================================== */
+
+/* Outer Full-Viewport Wrapper */
+.app-shell {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+  background-color: var(--color-navy-50);
+}
+
+/* Fixed Top Navbar */
+.app-navbar-container {
+  height: var(--navbar-height);
+  flex-shrink: 0;
+  background-color: var(--color-navy-900);
+  border-bottom: 1px solid var(--color-navy-800);
+  z-index: 1030;
+  box-shadow: var(--shadow-sm);
+}
+
+/* Two-Column Body Area */
+.app-body {
+  display: flex;
+  flex: 1;
+  height: calc(100vh - var(--navbar-height));
+  overflow: hidden;
+  position: relative;
+}
+
+/* Fixed Left Sidebar */
+.app-sidebar-container {
+  width: var(--sidebar-width);
+  flex-shrink: 0;
+  background-color: var(--color-navy-900);
+  border-right: 1px solid var(--color-navy-800);
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  overflow-x: hidden;
+  transition: transform var(--transition-base), width var(--transition-base);
+  z-index: 1020;
+}
+
+/* Custom Scrollbar for Sidebar */
+.app-sidebar-container::-webkit-scrollbar {
+  width: 5px;
+}
+.app-sidebar-container::-webkit-scrollbar-thumb {
+  background-color: var(--color-navy-700);
+  border-radius: 4px;
+}
+
+/* Main Content Area */
+.app-main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  overflow-x: hidden;
+  background-color: var(--color-navy-50);
+  padding: 1.75rem 2rem 3rem 2rem;
+}
+
+/* Inner View Container */
+.view-container {
+  max-width: 1400px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+/* Page Header Wrapper */
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1.75rem;
+  gap: 1rem;
+}
+
+.page-header-title {
+  margin: 0;
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--color-navy-900);
+}
+
+.page-header-subtitle {
+  margin: 0.25rem 0 0 0;
+  font-size: 0.9rem;
+  color: var(--color-navy-500);
+}
+
+.page-header-actions {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+/* Sidebar Backdrop for Mobile */
+.sidebar-backdrop {
+  display: none;
+  position: fixed;
+  top: var(--navbar-height);
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(2px);
+  z-index: 1015;
+}

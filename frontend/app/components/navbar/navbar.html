@@ -1,0 +1,56 @@
+<header class="navbar navbar-expand h-100 px-3 px-lg-4 d-flex justify-content-between align-items-center">
+  <!-- Brand & Mobile Toggle -->
+  <div class="d-flex align-items-center gap-3">
+    <button class="sidebar-toggle-btn d-lg-none" 
+            type="button" 
+            ng-click="$ctrl.toggleSidebar()" 
+            aria-label="Toggle navigation sidebar">
+      <i class="bi bi-list fs-5"></i>
+    </button>
+    <a href="#/dashboard" class="navbar-brand-wrapper text-decoration-none">
+      <span class="brand-icon-gem" aria-hidden="true">◈</span>
+      <span class="fw-bold tracking-wide">JOB COMMAND CENTER</span>
+    </a>
+  </div>
+
+  <!-- Actions & Authenticated User Section -->
+  <div class="navbar-user-section">
+    <!-- Notification Icon -->
+    <button class="notification-btn" type="button" aria-label="Notifications" title="Notifications">
+      <i class="bi bi-bell"></i>
+      <span class="notification-indicator" aria-hidden="true"></span>
+    </button>
+
+    <!-- User Profile Dropdown Container -->
+    <div class="navbar-user-dropdown position-relative">
+      <div class="user-profile-badge" 
+           ng-click="$ctrl.toggleDropdown()" 
+           title="User Profile Menu" 
+           role="button" 
+           tabindex="0" 
+           aria-haspopup="true" 
+           aria-expanded="{{ $ctrl.dropdownOpen }}">
+        <div class="user-avatar-circle" aria-hidden="true">{{ $ctrl.getUserInitial() }}</div>
+        <span class="user-name-label navbar-user-name">
+          {{ $ctrl.getUserName() }} 
+          <i class="bi bi-chevron-down ms-1 fs-6"></i>
+        </span>
+      </div>
+
+      <!-- Dropdown Menu -->
+      <div class="user-dropdown-menu" ng-class="{ 'show': $ctrl.dropdownOpen }">
+        <div class="px-3 py-2 border-bottom">
+          <div class="fw-bold text-dark small">{{ $ctrl.getUserName() }}</div>
+          <div class="text-slate-muted small text-truncate">{{ $ctrl.getUserEmail() }}</div>
+        </div>
+        <a href="#/settings" class="dropdown-item-command" ng-click="$ctrl.dropdownOpen = false">
+          <i class="bi bi-gear"></i> Settings
+        </a>
+        <div class="dropdown-divider my-1"></div>
+        <button type="button" class="dropdown-item-command text-danger" ng-click="$ctrl.logout()">
+          <i class="bi bi-box-arrow-right"></i> Sign Out
+        </button>
+      </div>
+    </div>
+  </div>
+</header>

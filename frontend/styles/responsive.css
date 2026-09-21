@@ -1,0 +1,96 @@
+/* ==========================================================================
+   RESPONSIVE.CSS - Breakpoints, Viewport Adaptations, & Mobile Nav
+   Job Application Command Center (AngularJS 1.8.x)
+   ========================================================================== */
+
+/* Laptop & Medium Displays (<= 1200px) */
+@media (max-width: 1200px) {
+  .app-main-content {
+    padding: 1.5rem 1.5rem 2.5rem 1.5rem;
+  }
+}
+
+/* Tablet Devices (<= 992px) */
+@media (max-width: 992px) {
+  :root {
+    --sidebar-width: 230px;
+  }
+
+  .page-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .page-header-actions {
+    justify-content: flex-start;
+  }
+}
+
+/* Mobile Devices (<= 768px) */
+@media (max-width: 768px) {
+  .app-main-content {
+    padding: 1rem 1rem 2rem 1rem;
+  }
+
+  /* Off-canvas Mobile Sidebar */
+  .app-sidebar-container {
+    position: fixed;
+    top: var(--navbar-height);
+    bottom: 0;
+    left: 0;
+    transform: translateX(-100%);
+    width: 260px;
+    box-shadow: var(--shadow-lg);
+  }
+
+  /* When toggled open on mobile */
+  .sidebar-open .app-sidebar-container {
+    transform: translateX(0);
+  }
+
+  .sidebar-open .sidebar-backdrop {
+    display: block;
+  }
+
+  .navbar-user-name {
+    display: none;
+  }
+
+  .kanban-board-wrapper {
+    padding-bottom: 2rem;
+  }
+
+  .job-card-main {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .stat-card-widget {
+    padding: 1rem 1.25rem;
+  }
+
+  .stat-card-count {
+    font-size: 1.8rem;
+  }
+}
+
+/* Extra Small Phones (<= 480px) */
+@media (max-width: 480px) {
+  .page-header-title {
+    font-size: 1.35rem;
+  }
+
+  .navbar-brand-wrapper {
+    font-size: 0.9rem;
+  }
+
+  .navbar-brand-wrapper span.brand-text-long {
+    display: none;
+  }
+
+  .btn-command-primary,
+  .btn-command-secondary {
+    width: 100%;
+    justify-content: center;
+  }
+}

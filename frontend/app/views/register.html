@@ -1,0 +1,137 @@
+<div class="auth-page-wrapper">
+  <div class="auth-card-container">
+    <!-- Brand Header -->
+    <div class="text-center mb-4">
+      <div class="d-inline-flex align-items-center justify-content-center brand-icon-gem mx-auto mb-2" style="width: 44px; height: 44px; font-size: 1.4rem;">
+        ◈
+      </div>
+      <h1 class="h4 fw-bold text-dark mb-1">JOB COMMAND CENTER</h1>
+      <p class="text-slate-muted small mb-0">Create your personal command center account</p>
+    </div>
+
+    <!-- Registration Card -->
+    <div class="card bg-slate-card p-4 p-sm-5 shadow-sm">
+      <div class="mb-4 text-center">
+        <h2 class="h5 fw-bold text-dark mb-1">Create an Account</h2>
+        <p class="text-slate-muted small mb-0">Track applications, interviews, and offers in one place</p>
+      </div>
+
+      <!-- Success Alert Message -->
+      <div class="alert alert-success d-flex align-items-center gap-2 small py-2 px-3 mb-3" role="alert" ng-if="vm.successMessage">
+        <i class="bi bi-check-circle-fill flex-shrink-0"></i>
+        <div>{{ vm.successMessage }}</div>
+      </div>
+
+      <!-- Error Alert Message -->
+      <div class="alert alert-danger d-flex align-items-center gap-2 small py-2 px-3 mb-3" role="alert" ng-if="vm.errorMessage">
+        <i class="bi bi-exclamation-triangle-fill flex-shrink-0"></i>
+        <div>{{ vm.errorMessage }}</div>
+      </div>
+
+      <!-- Register Form -->
+      <form name="registerForm" ng-submit="vm.submitRegister(registerForm)" novalidate>
+        <!-- Name Field -->
+        <div class="mb-3">
+          <label class="form-label small fw-semibold text-secondary" for="regName">Full Name</label>
+          <div class="input-group">
+            <span class="input-group-text bg-light text-muted border-end-0">
+              <i class="bi bi-person"></i>
+            </span>
+            <input type="text" 
+                   id="regName" 
+                   name="name" 
+                   class="form-control border-start-0" 
+                   placeholder="e.g. Alex Johnson" 
+                   ng-model="vm.userData.name" 
+                   required
+                   ng-class="{ 'is-invalid': registerForm.$submitted && registerForm.name.$invalid }">
+          </div>
+          <div class="invalid-feedback d-block small" ng-if="registerForm.$submitted && registerForm.name.$invalid">
+            Full name is required.
+          </div>
+        </div>
+
+        <!-- Email Field -->
+        <div class="mb-3">
+          <label class="form-label small fw-semibold text-secondary" for="regEmail">Email Address</label>
+          <div class="input-group">
+            <span class="input-group-text bg-light text-muted border-end-0">
+              <i class="bi bi-envelope"></i>
+            </span>
+            <input type="email" 
+                   id="regEmail" 
+                   name="email" 
+                   class="form-control border-start-0" 
+                   placeholder="you@example.com" 
+                   ng-model="vm.userData.email" 
+                   required
+                   ng-class="{ 'is-invalid': registerForm.$submitted && registerForm.email.$invalid }"
+                   autocomplete="username">
+          </div>
+          <div class="invalid-feedback d-block small" ng-if="registerForm.$submitted && registerForm.email.$invalid">
+            Please provide a valid email address.
+          </div>
+        </div>
+
+        <!-- Password Field -->
+        <div class="mb-3">
+          <label class="form-label small fw-semibold text-secondary" for="regPassword">Password (Min 6 chars)</label>
+          <div class="input-group">
+            <span class="input-group-text bg-light text-muted border-end-0">
+              <i class="bi bi-lock"></i>
+            </span>
+            <input type="password" 
+                   id="regPassword" 
+                   name="password" 
+                   class="form-control border-start-0" 
+                   placeholder="At least 6 characters" 
+                   ng-model="vm.userData.password" 
+                   ng-minlength="6"
+                   required
+                   ng-class="{ 'is-invalid': registerForm.$submitted && registerForm.password.$invalid }"
+                   autocomplete="new-password">
+          </div>
+          <div class="invalid-feedback d-block small" ng-if="registerForm.$submitted && registerForm.password.$invalid">
+            Password must be at least 6 characters.
+          </div>
+        </div>
+
+        <!-- Confirm Password Field -->
+        <div class="mb-4">
+          <label class="form-label small fw-semibold text-secondary" for="regConfirmPassword">Confirm Password</label>
+          <div class="input-group">
+            <span class="input-group-text bg-light text-muted border-end-0">
+              <i class="bi bi-lock-fill"></i>
+            </span>
+            <input type="password" 
+                   id="regConfirmPassword" 
+                   name="confirmPassword" 
+                   class="form-control border-start-0" 
+                   placeholder="Re-enter password" 
+                   ng-model="vm.userData.confirmPassword" 
+                   required
+                   ng-class="{ 'is-invalid': registerForm.$submitted && (registerForm.confirmPassword.$invalid || vm.userData.password !== vm.userData.confirmPassword) }"
+                   autocomplete="new-password">
+          </div>
+          <div class="invalid-feedback d-block small" ng-if="registerForm.$submitted && vm.userData.password !== vm.userData.confirmPassword">
+            Passwords do not match.
+          </div>
+        </div>
+
+        <!-- Submit Button -->
+        <button type="submit" 
+                class="btn btn-command-primary w-100 py-2 justify-content-center fw-bold" 
+                ng-disabled="vm.isLoading">
+          <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true" ng-if="vm.isLoading"></span>
+          <span>{{ vm.isLoading ? 'Creating Account...' : 'Create Account' }}</span>
+        </button>
+      </form>
+
+      <!-- Footer / Switch to Login -->
+      <div class="mt-4 pt-3 border-top text-center">
+        <span class="text-slate-muted small">Already have an account?</span>
+        <a href="#/login" class="small fw-semibold text-primary ms-1">Sign In</a>
+      </div>
+    </div>
+  </div>
+</div>

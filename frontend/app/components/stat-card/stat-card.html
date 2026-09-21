@@ -1,0 +1,14 @@
+<div class="stat-card-widget">
+  <div class="stat-card-header">
+    <h3 class="stat-card-title">{{ $ctrl.title }}</h3>
+    <div class="stat-card-icon" ng-class="$ctrl.color || 'blue'" aria-hidden="true">
+      <i class="bi" ng-class="$ctrl.icon || 'bi-bar-chart-fill'"></i>
+    </div>
+  </div>
+  <div>
+    <div class="stat-card-count">{{ $ctrl.count }}</div>
+    <div class="stat-card-footer" ng-if="$ctrl.subtitle">
+      <span class="text-slate-muted">{{ $ctrl.subtitle }}</span>
+    </div>
+  </div>
+</div>

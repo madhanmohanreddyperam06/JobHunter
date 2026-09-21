@@ -1,0 +1,728 @@
+/* ==========================================================================
+   COMPONENTS.CSS - Reusable UI Components & Widgets
+   Job Application Command Center (AngularJS 1.8.x)
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. NAVBAR COMPONENT
+   -------------------------------------------------------------------------- */
+.navbar-brand-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 1.05rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.brand-icon-gem {
+  width: 28px;
+  height: 28px;
+  background: linear-align(135deg, #3b82f6, #1d4ed8);
+  background-color: var(--primary-600);
+  color: #ffffff;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  box-shadow: 0 0 10px rgba(59, 130, 246, 0.4);
+}
+
+.navbar-user-section {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.notification-btn {
+  position: relative;
+  background: transparent;
+  border: none;
+  color: var(--color-navy-300);
+  font-size: 1.25rem;
+  padding: 0.35rem 0.5rem;
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  transition: color var(--transition-fast), background-color var(--transition-fast);
+}
+
+.notification-btn:hover {
+  color: #ffffff;
+  background-color: var(--color-navy-800);
+}
+
+.notification-indicator {
+  position: absolute;
+  top: 4px;
+  right: 6px;
+  width: 8px;
+  height: 8px;
+  background-color: #ef4444;
+  border-radius: var(--radius-full);
+  border: 1.5px solid var(--color-navy-900);
+}
+
+.user-profile-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.35rem 0.75rem;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: background-color var(--transition-fast);
+}
+
+.user-profile-badge:hover {
+  background-color: var(--color-navy-800);
+}
+
+.user-avatar-circle {
+  width: 32px;
+  height: 32px;
+  background-color: var(--color-navy-700);
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-full);
+  border: 1.5px solid var(--color-navy-600);
+}
+
+.user-name-label {
+  color: #f8fafc;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.sidebar-toggle-btn {
+  background: transparent;
+  border: 1px solid var(--color-navy-700);
+  color: var(--color-navy-300);
+  padding: 0.35rem 0.65rem;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+}
+
+/* --------------------------------------------------------------------------
+   2. SIDEBAR NAVIGATION
+   -------------------------------------------------------------------------- */
+.sidebar-nav-list {
+  list-style: none;
+  padding: 1rem 0.75rem;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.sidebar-section-title {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-navy-500);
+  padding: 0.75rem 0.75rem 0.35rem 0.75rem;
+}
+
+.sidebar-nav-item a {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 0.65rem 0.85rem;
+  color: var(--color-navy-400);
+  font-size: 0.9rem;
+  font-weight: 500;
+  border-radius: var(--radius-md);
+  transition: all var(--transition-fast);
+  text-decoration: none;
+}
+
+.sidebar-nav-item a:hover {
+  color: #ffffff;
+  background-color: var(--color-navy-800);
+}
+
+.sidebar-nav-item.active a {
+  color: #ffffff;
+  background-color: rgba(59, 130, 246, 0.15);
+  font-weight: 600;
+  border-left: 3px solid var(--primary-500);
+  padding-left: calc(0.85rem - 3px);
+}
+
+.sidebar-nav-item i {
+  font-size: 1.15rem;
+  width: 20px;
+  text-align: center;
+}
+
+.sidebar-footer-note {
+  margin-top: auto;
+  padding: 1rem 1.25rem;
+  border-top: 1px solid var(--color-navy-800);
+  font-size: 0.75rem;
+  color: var(--color-navy-500);
+}
+
+/* --------------------------------------------------------------------------
+   3. STAT CARDS (KPI)
+   -------------------------------------------------------------------------- */
+.stat-card-widget {
+  background-color: #ffffff;
+  border: 1px solid var(--color-navy-200);
+  border-radius: var(--radius-lg);
+  padding: 1.25rem 1.5rem;
+  box-shadow: var(--shadow-xs);
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.stat-card-widget:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.stat-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 0.75rem;
+}
+
+.stat-card-title {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--color-navy-500);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin: 0;
+}
+
+.stat-card-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+}
+
+.stat-card-icon.blue {
+  background-color: #eff6ff;
+  color: #2563eb;
+}
+
+.stat-card-icon.amber {
+  background-color: #fef3c7;
+  color: #d97706;
+}
+
+.stat-card-icon.purple {
+  background-color: #ede9fe;
+  color: #7c3aed;
+}
+
+.stat-card-icon.green {
+  background-color: #d1fae5;
+  color: #059669;
+}
+
+.stat-card-count {
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: var(--color-navy-900);
+  line-height: 1.1;
+  margin: 0 0 0.4rem 0;
+}
+
+.stat-card-footer {
+  font-size: 0.8rem;
+  color: var(--color-navy-500);
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+/* --------------------------------------------------------------------------
+   4. STATUS & PRIORITY BADGES
+   -------------------------------------------------------------------------- */
+.app-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.25rem 0.65rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-radius: var(--radius-full);
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  line-height: 1.2;
+}
+
+.status-applied {
+  background-color: var(--status-applied-bg);
+  color: var(--status-applied);
+  border: 1px solid rgba(2, 132, 199, 0.2);
+}
+
+.status-assessment {
+  background-color: var(--status-assessment-bg);
+  color: var(--status-assessment);
+  border: 1px solid rgba(217, 119, 6, 0.2);
+}
+
+.status-interview {
+  background-color: var(--status-interview-bg);
+  color: var(--status-interview);
+  border: 1px solid rgba(124, 58, 237, 0.2);
+}
+
+.status-offer {
+  background-color: var(--status-offer-bg);
+  color: var(--status-offer);
+  border: 1px solid rgba(5, 150, 105, 0.2);
+}
+
+.status-rejected {
+  background-color: var(--status-rejected-bg);
+  color: var(--status-rejected);
+  border: 1px solid rgba(220, 38, 38, 0.2);
+}
+
+.status-saved {
+  background-color: var(--status-saved-bg);
+  color: var(--status-saved);
+  border: 1px solid rgba(100, 116, 139, 0.2);
+}
+
+/* Priority Badges */
+.app-priority-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.2rem 0.55rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  border-radius: var(--radius-sm);
+  text-transform: uppercase;
+}
+
+.priority-low {
+  background-color: #f1f5f9;
+  color: #475569;
+}
+
+.priority-medium {
+  background-color: #fef3c7;
+  color: #b45309;
+}
+
+.priority-high {
+  background-color: #ffedd5;
+  color: #c2410c;
+}
+
+.priority-urgent {
+  background-color: #fee2e2;
+  color: #b91c1c;
+}
+
+/* --------------------------------------------------------------------------
+   5. JOB CARD DIRECTIVE & LIST ITEM
+   -------------------------------------------------------------------------- */
+.job-card-wrapper {
+  background-color: #ffffff;
+  border: 1px solid var(--color-navy-200);
+  border-radius: var(--radius-lg);
+  padding: 1.25rem 1.5rem;
+  box-shadow: var(--shadow-xs);
+  transition: all var(--transition-fast);
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  position: relative;
+}
+
+.job-card-wrapper:hover {
+  border-color: var(--color-navy-300);
+  box-shadow: var(--shadow-sm);
+}
+
+.job-card-main {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.job-card-company {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--color-navy-900);
+  margin: 0 0 0.2rem 0;
+}
+
+.job-card-role {
+  font-size: 0.92rem;
+  font-weight: 500;
+  color: var(--color-navy-600);
+  margin: 0;
+}
+
+.job-card-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1.25rem;
+  font-size: 0.82rem;
+  color: var(--color-navy-500);
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--color-navy-100);
+}
+
+.job-card-meta-item {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+/* --------------------------------------------------------------------------
+   6. SEARCH & FILTER TOOLBAR
+   -------------------------------------------------------------------------- */
+.filter-toolbar-card {
+  background-color: #ffffff;
+  border: 1px solid var(--color-navy-200);
+  border-radius: var(--radius-lg);
+  padding: 1rem 1.25rem;
+  margin-bottom: 1.5rem;
+  box-shadow: var(--shadow-xs);
+}
+
+.search-input-group {
+  position: relative;
+}
+
+.search-input-group i {
+  position: absolute;
+  left: 0.85rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--color-navy-400);
+  font-size: 0.95rem;
+}
+
+.search-input-field {
+  padding-left: 2.35rem !important;
+}
+
+/* --------------------------------------------------------------------------
+   7. KANBAN BOARD
+   -------------------------------------------------------------------------- */
+.kanban-board-wrapper {
+  display: flex;
+  gap: 1rem;
+  overflow-x: auto;
+  padding-bottom: 1.5rem;
+  min-height: calc(100vh - 230px);
+}
+
+.kanban-board-wrapper::-webkit-scrollbar {
+  height: 8px;
+}
+.kanban-board-wrapper::-webkit-scrollbar-thumb {
+  background-color: var(--color-navy-300);
+  border-radius: 4px;
+}
+
+.kanban-column {
+  flex: 0 0 280px;
+  background-color: #f1f5f9;
+  border: 1px solid var(--color-navy-200);
+  border-radius: var(--radius-lg);
+  display: flex;
+  flex-direction: column;
+  max-height: calc(100vh - 220px);
+}
+
+.kanban-column-header {
+  padding: 0.85rem 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--color-navy-200);
+  background-color: #f8fafc;
+  border-top-left-radius: var(--radius-lg);
+  border-top-right-radius: var(--radius-lg);
+}
+
+.kanban-column-title {
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-navy-700);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.kanban-column-count {
+  background-color: var(--color-navy-200);
+  color: var(--color-navy-700);
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.15rem 0.5rem;
+  border-radius: var(--radius-full);
+}
+
+.kanban-cards-stack {
+  padding: 0.85rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  overflow-y: auto;
+  flex: 1;
+  min-height: 150px;
+}
+
+.kanban-item-card {
+  background-color: #ffffff;
+  border: 1px solid var(--color-navy-200);
+  border-radius: var(--radius-md);
+  padding: 1rem;
+  box-shadow: var(--shadow-xs);
+  cursor: grab;
+  user-select: none;
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast), border-color var(--transition-fast), opacity var(--transition-fast);
+}
+
+.kanban-item-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-sm);
+  border-color: var(--color-navy-300);
+}
+
+.kanban-item-card:active {
+  cursor: grabbing;
+}
+
+/* SortableJS drag states */
+.kanban-item-card.sortable-ghost {
+  opacity: 0.35;
+  background-color: #e2e8f0;
+  border: 2px dashed #94a3b8;
+  box-shadow: none;
+}
+
+.kanban-item-card.sortable-chosen {
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+  border-color: #3b82f6;
+}
+
+.kanban-item-card.sortable-drag {
+  opacity: 0.95;
+  transform: rotate(1.5deg) scale(1.02);
+  cursor: grabbing;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.15);
+  background-color: #ffffff;
+}
+
+/* Card currently persisting status update */
+.kanban-item-card.is-updating {
+  opacity: 0.7;
+  pointer-events: none;
+  border-color: #f59e0b;
+  background-color: #fffdf5;
+}
+
+.empty-column-placeholder {
+  pointer-events: none;
+  border: 2px dashed #cbd5e1;
+  border-radius: var(--radius-md);
+  padding: 1.5rem 1rem;
+  color: #94a3b8;
+}
+
+.kanban-card-company {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--color-navy-900);
+  margin-bottom: 0.15rem;
+}
+
+.kanban-card-role {
+  font-size: 0.85rem;
+  color: var(--color-navy-600);
+  margin-bottom: 0.75rem;
+}
+
+.kanban-card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.75rem;
+  color: var(--color-navy-400);
+}
+
+/* --------------------------------------------------------------------------
+   8. EMPTY STATE PLACEHOLDER HERO
+   -------------------------------------------------------------------------- */
+.empty-state-card {
+  background-color: #ffffff;
+  border: 1px dashed var(--color-navy-300);
+  border-radius: var(--radius-lg);
+  padding: 4rem 2rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  max-width: 600px;
+  margin: 3rem auto;
+}
+
+.empty-state-icon-circle {
+  width: 64px;
+  height: 64px;
+  background-color: var(--color-navy-100);
+  color: var(--color-navy-500);
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  margin-bottom: 1.25rem;
+}
+
+.empty-state-title {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--color-navy-900);
+  margin-bottom: 0.5rem;
+}
+
+.empty-state-text {
+  font-size: 0.9rem;
+  color: var(--color-navy-500);
+  max-width: 420px;
+  margin-bottom: 1.5rem;
+}
+
+/* --------------------------------------------------------------------------
+   9. MODERN BUTTONS & FORM INPUTS
+   -------------------------------------------------------------------------- */
+.btn-command-primary {
+  background-color: var(--primary-600);
+  border-color: var(--primary-600);
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 0.875rem;
+  border-radius: var(--radius-md);
+  padding: 0.55rem 1.15rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  transition: background-color var(--transition-fast);
+}
+
+.btn-command-primary:hover {
+  background-color: var(--primary-700);
+  border-color: var(--primary-700);
+  color: #ffffff;
+}
+
+.btn-command-secondary {
+  background-color: #ffffff;
+  border: 1px solid var(--color-navy-300);
+  color: var(--color-navy-700);
+  font-weight: 600;
+  font-size: 0.875rem;
+  border-radius: var(--radius-md);
+  padding: 0.55rem 1.15rem;
+  transition: all var(--transition-fast);
+}
+
+.btn-command-secondary:hover {
+  background-color: var(--color-navy-50);
+  border-color: var(--color-navy-400);
+  color: var(--color-navy-900);
+}
+
+/* --------------------------------------------------------------------------
+   10. AUTHENTICATION PAGES (LOGIN / REGISTER)
+   -------------------------------------------------------------------------- */
+.auth-page-wrapper {
+  min-height: 100vh;
+  width: 100vw;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--color-navy-50);
+  padding: 2rem 1rem;
+}
+
+.auth-card-container {
+  width: 100%;
+  max-width: 440px;
+  margin: 0 auto;
+}
+
+.navbar-user-dropdown {
+  position: relative;
+}
+
+.user-dropdown-menu {
+  display: none;
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 0.5rem;
+  min-width: 180px;
+  background-color: #ffffff;
+  border: 1px solid var(--color-navy-200);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  padding: 0.5rem 0;
+  z-index: 1050;
+}
+
+.user-dropdown-menu.show {
+  display: block;
+}
+
+.dropdown-item-command {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  color: var(--color-navy-700);
+  font-size: 0.85rem;
+  font-weight: 500;
+  text-decoration: none;
+  cursor: pointer;
+  background: transparent;
+  border: none;
+  width: 100%;
+  text-align: left;
+  transition: background-color var(--transition-fast);
+}
+
+.dropdown-item-command:hover {
+  background-color: var(--color-navy-100);
+  color: var(--color-navy-900);
+}
+
+.dropdown-item-command.text-danger:hover {
+  background-color: #fee2e2;
+  color: #dc2626 !important;
+}
+
