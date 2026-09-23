@@ -104,34 +104,25 @@ def register(user_in: UserCreate, db: Session = Depends(get_db)) -> UserResponse
 
     return new_user
 
+
 @router.options(
     "/register",
     include_in_schema=False
 )
 async def register_options():
-    """Allow CORS preflight for registration without validation errors."""
+    """Handle CORS preflight for register endpoint."""
     from fastapi import Response
-    return Response(status_code=200)
+    return Response(
+        status_code=200,
+        headers={
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Methods": "POST, OPTIONS",
+            "Access-Control-Allow-Headers": "*",
+            "Access-Control-Max-Age": "86400"
+        }
+    )
 
 
-@router.options(
-    "/login",
-    include_in_schema=False
-)
-async def login_options():
-    """Allow CORS preflight for login without validation errors."""
-    from fastapi import Response
-    return Response(status_code=200)
-
-
-@router.options(
-    "/me",
-    include_in_schema=False
-)
-async def me_options():
-    """Allow CORS preflight for me endpoint without validation errors."""
-    from fastapi import Response
-    return Response(status_code=200)
 
 
 @router.post(
@@ -163,6 +154,24 @@ def login(credentials: LoginRequest, db: Session = Depends(get_db)) -> Token:
     )
 
 
+@router.options(
+    "/login",
+    include_in_schema=False
+)
+async def login_options():
+    """Handle CORS preflight for login endpoint."""
+    from fastapi import Response
+    return Response(
+        status_code=200,
+        headers={
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Methods": "POST, OPTIONS",
+            "Access-Control-Allow-Headers": "*",
+            "Access-Control-Max-Age": "86400"
+        }
+    )
+
+
 @router.get(
     "/me",
     response_model=UserResponse,
@@ -173,6 +182,24 @@ def get_me(current_user: User = Depends(get_current_user)) -> UserResponse:
     Retrieves the identity profile of the currently authenticated user.
     """
     return current_user
+
+
+@router.options(
+    "/me",
+    include_in_schema=False
+)
+async def me_options():
+    """Handle CORS preflight for me endpoint."""
+    from fastapi import Response
+    return Response(
+        status_code=200,
+        headers={
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Methods": "GET, OPTIONS",
+            "Access-Control-Allow-Headers": "*",
+            "Access-Control-Max-Age": "86400"
+        }
+    )
 
 
 @router.get(
