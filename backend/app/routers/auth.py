@@ -114,6 +114,26 @@ async def register_options():
     return Response(status_code=200)
 
 
+@router.options(
+    "/login",
+    include_in_schema=False
+)
+async def login_options():
+    """Allow CORS preflight for login without validation errors."""
+    from fastapi import Response
+    return Response(status_code=200)
+
+
+@router.options(
+    "/me",
+    include_in_schema=False
+)
+async def me_options():
+    """Allow CORS preflight for me endpoint without validation errors."""
+    from fastapi import Response
+    return Response(status_code=200)
+
+
 @router.post(
     "/login",
     response_model=Token,

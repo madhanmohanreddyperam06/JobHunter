@@ -42,7 +42,7 @@ class Settings(BaseSettings):
     def DATABASE_URL(self) -> str:
         """
         Constructs a sanitized SQLAlchemy MySQL connection URL.
-        URL-encodes username and password to safely handle special characters.
+        URL-encodes both username and password to handle special characters properly.
         """
         encoded_user = urllib.parse.quote_plus(self.DATABASE_USER)
         encoded_password = urllib.parse.quote_plus(self.DATABASE_PASSWORD)
