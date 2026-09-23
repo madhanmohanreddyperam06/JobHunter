@@ -104,6 +104,15 @@ def register(user_in: UserCreate, db: Session = Depends(get_db)) -> UserResponse
 
     return new_user
 
+@router.options(
+    "/register",
+    include_in_schema=False
+)
+async def register_options():
+    """Allow CORS preflight for registration without validation errors."""
+    from fastapi import Response
+    return Response(status_code=200)
+
 
 @router.post(
     "/login",

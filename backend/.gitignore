@@ -20,3 +20,8 @@ htmlcov/
 
 # Logs
 *.log
+
+# Storage files (uploaded resumes)
+storage/*
+!storage/.gitkeep
+!storage/resumes/.gitkeep
