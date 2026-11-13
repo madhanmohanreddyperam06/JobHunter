@@ -33,6 +33,12 @@ angular.module('jobCommandCenter', [
     return path === '/login' || path === '/register';
   };
 
+  // Helper to check if current route is the landing page
+  $rootScope.isLandingPage = function() {
+    var path = $location.path();
+    return path === '/' || path === '';
+  };
+
   // Hydrate user profile on application boot if token exists
   AuthService.init();
 
@@ -41,7 +47,8 @@ angular.module('jobCommandCenter', [
     if (!next) return;
 
     var isAuthRoute = next.originalPath === '/login' || next.originalPath === '/register';
-    var requiresAuth = next.requiresAuth !== false && !isAuthRoute;
+    var isLandingRoute = next.originalPath === '/';
+    var requiresAuth = next.requiresAuth !== false && !isAuthRoute && !isLandingRoute;
 
     if (requiresAuth && !AuthService.isAuthenticated()) {
       event.preventDefault();

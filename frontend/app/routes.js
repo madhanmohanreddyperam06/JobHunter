@@ -10,6 +10,13 @@ angular.module('jobCommandCenter')
   $locationProvider.hashPrefix('');
 
   $routeProvider
+    // Landing Page (Public)
+    .when('/', {
+      templateUrl: 'app/views/landing.html',
+      controller: 'LandingController',
+      controllerAs: 'vm',
+      requiresAuth: false
+    })
     // Public Authentication Routes
     .when('/login', {
       templateUrl: 'app/views/login.html',
@@ -87,10 +94,7 @@ angular.module('jobCommandCenter')
     })
 
     // Fallbacks
-    .when('/', {
-      redirectTo: '/dashboard'
-    })
     .otherwise({
-      redirectTo: '/dashboard'
+      redirectTo: '/'
     });
 }]);

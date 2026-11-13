@@ -242,6 +242,7 @@ job-application-command-center/
 ├── scratch/                      # Development scratchpad
 │   └── README.md                 # Scratchpad notes and experiments
 ├── .gitignore                    # Git ignore rules
+├── LICENSE                       # MIT License
 └── README.md                     # This file
 ```
 

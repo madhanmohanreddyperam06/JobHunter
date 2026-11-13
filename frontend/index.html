@@ -22,13 +22,14 @@
   <link rel="stylesheet" href="styles/layout.css">
   <link rel="stylesheet" href="styles/components.css">
   <link rel="stylesheet" href="styles/responsive.css">
+  <link rel="stylesheet" href="styles/landing.css">
 </head>
 <body>
 
   <!-- Main Application Shell -->
   <div class="app-shell" ng-class="{ 'sidebar-open': sidebarOpen, 'auth-mode': isAuthPage() }">
 
-    <!-- Reusable Navbar Component (Hidden on Login/Register) -->
+    <!-- Reusable Navbar Component (Hidden on Landing/Login/Register) -->
     <div class="app-navbar-container" ng-if="!isAuthPage()">
       <app-navbar></app-navbar>
     </div>
@@ -38,8 +39,8 @@
       <!-- Mobile Backdrop -->
       <div class="sidebar-backdrop" ng-click="closeSidebar()" aria-hidden="true" ng-if="!isAuthPage()"></div>
 
-      <!-- Reusable Sidebar Component (Hidden on Login/Register) -->
-      <aside class="app-sidebar-container" aria-label="Application Sidebar" ng-if="!isAuthPage()">
+      <!-- Reusable Sidebar Component (Hidden on Landing/Login/Register) -->
+      <aside class="app-sidebar-container" aria-label="Application Sidebar" ng-if="!isAuthPage() && !isLandingPage()">
         <app-sidebar></app-sidebar>
       </aside>
 
@@ -95,6 +96,7 @@
   <script src="app/components/stat-card/stat-card.component.js"></script>
 
   <!-- Controllers -->
+  <script src="app/controllers/landing.controller.js"></script>
   <script src="app/controllers/login.controller.js"></script>
   <script src="app/controllers/register.controller.js"></script>
   <script src="app/controllers/dashboard.controller.js"></script>
